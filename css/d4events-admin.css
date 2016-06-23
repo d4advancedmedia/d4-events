@@ -1,0 +1,18 @@
+#postcustom {
+  display: none;
+}
+.row-d4events_end_date label, .row-d4events_end_time label, .row-d4events_start_date label, .row-d4events_start_time label {
+  display: none;
+}
+.events-meta-row {
+  clear: both;
+  display: block;
+  float: none;
+  padding-top: 20px;
+}
+.row-d4events_end_date, .row-d4events_end_time, .row-d4events_start_date, .row-d4events_start_time {
+  clear: none;
+  display: inline;
+  float: left;
+  padding: 0;
+}
