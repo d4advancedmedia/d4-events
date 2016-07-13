@@ -14,7 +14,6 @@ $options = get_option('d4events_options');
 $api_key = $options['api_key'];
 
 //Create addtocalendar.com readable values
-
 if (strtotime($start_time) == strtotime('xyz')) {
 	$start_time_adjusted = '12:00am';
 } else {$start_time_adjusted = $start_time;}
@@ -26,10 +25,9 @@ $act_date_end = date('Y-m-d H:i:s', (strtotime($end_date.$end_time_adjusted)));
 
 get_header();
 d4events_before_main_content();
-if (!is_user_logged_in()) {
-	echo 'You must have a Somersett account to access this page';
-} else {
 	
+
+	//Output the event content
 	echo '<div class="one_half single-event-left"><div class="skivdiv-content">'.
 		'<h2>Description</h2>'.
 		the_post();
@@ -76,7 +74,7 @@ if (!is_user_logged_in()) {
 		}
 		
 		echo '</div></div>';
-}
+
 d4events_after_main_content();
 get_footer();
 ?>
