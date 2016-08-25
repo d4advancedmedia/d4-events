@@ -1,72 +1,7 @@
 <?php
 
-/*------------------------------------------------------
-----------------------Admin Elements--------------------
-------------------------------------------------------*/
-
-//add settings menu and page
-add_action('admin_menu', 'd4events_register_settings_page');
-function d4events_register_settings_page() {
-    add_submenu_page(
-        'edit.php?post_type=events',
-        __( 'Settings', 'textdomain' ),
-        __( 'Settings', 'textdomain' ),
-        'manage_options',
-        'd4events-settings',
-        'd4events_settings_page_callback'
-    );
-}
-
-// display the admin options page
-function d4events_settings_page_callback() {
-	
-	?>
-		<div>
-		<h2>Events Settings</h2>
-		Add API credentials from <a target="_blank" href="https://console.developers.google.com/apis/credentials">https://console.developers.google.com/apis/credentials</a>
-		<form action="options.php" method="post">
-		<?php settings_fields('d4events_options'); ?>
-		<?php do_settings_sections('d4events'); ?>
-		 
-		<input name="Submit" type="submit" value="<?php esc_attr_e('Save Changes'); ?>" />
-		</form></div>
-	<?php
-}
-
-// add the admin settings and such
-add_action('admin_init', 'd4events_admin_init');
-function d4events_admin_init(){
-	register_setting( 'd4events_options', 'd4events_options' );
-	add_settings_section('d4events_main', 'Application Settings', 'd4events_section_text', 'd4events');
-	add_settings_field('api_key', 'API Key', 'events_api_key', 'd4events', 'd4events_main');
-}
-
-function d4events_section_text(){}
-
-function events_api_key() {
-	$options = get_option('d4events_options');
-	echo "<input id='events_api_key' name='d4events_options[api_key]' size='40' type='text' value='{$options['api_key']}' />";
-}
-
-$options = get_option('d4events_options');
-$api_key = $options['api_key'];
-
-//Register style sheets and scripts
-function d4events_admin_elements() {
-    wp_enqueue_style('d4events-admin-theme', plugins_url('../css/d4events-admin.css', __FILE__));
-    wp_enqueue_script('jquery-ui-datepicker');
-    wp_enqueue_style('jquery-ui-custom', plugins_url( '../css/jquery-ui-custom.css' , __FILE__ ) );
-    wp_register_script( 'd4events-admin', plugins_url( '../js/d4events-admin.js' , __FILE__ ), array( 'jquery' ), 'v20131005', true );
-	wp_enqueue_script('d4events-admin');
-	wp_register_script( 'd4places-lib', 'https://maps.googleapis.com/maps/api/js?key='.$api_key.'&libraries=places');
-	wp_enqueue_script('d4places-lib');
-}
-add_action('admin_enqueue_scripts', 'd4events_admin_elements');
-add_action('login_enqueue_scripts', 'd4events_admin_elements');
-
-
-// Register Custom Post Type
-function events() {
+// Register Events Post Type
+function d4events_posttype() {
 
 	$labels = array(
 		'name'                  => _x( 'Events', 'Post Type General Name', 'events' ),
@@ -118,7 +53,11 @@ function events() {
 	register_post_type( 'events', $args );
 
 }
-add_action( 'init', 'events', 0 );
+add_action( 'init', 'd4events_posttype', 0 );
+
+/*------------------------------------------------------
+----------------------Admin Elements--------------------
+------------------------------------------------------*/
 
 function d4_events_timezone_list($postid) {
 	$current_offset = get_option('gmt_offset');
@@ -395,21 +334,6 @@ add_action('save_post', 'save_d4events_meta');
 ----------------------Front End-------------------------
 ------------------------------------------------------*/
 
-// Register style sheet and scripts.
-add_action( 'wp_enqueue_scripts', 'register_d4events_elements' );
-
-/**
- * Register style sheet.
- */
-function register_d4events_elements() {
-	wp_register_style( 'd4events', plugins_url( '../css/d4events.css' , __FILE__ ) );
-	wp_enqueue_style( 'd4events' );
-	wp_register_style( 'add-to-calendar', plugins_url( '../css/atc-style-blue.css' , __FILE__ ) );
-	wp_enqueue_style( 'add-to-calendar' );
-	wp_register_script( 'd4events', plugins_url( '../js/d4events.js' , __FILE__ ), array( 'jquery' ), 'v20131005', true );
-	wp_enqueue_script('d4events');	
-}
-
 function event_output() {
 	$posttitle = '<h5 class="cal-event-title">'.get_the_title().'</h5>';
 
@@ -505,7 +429,7 @@ function get_events($event_date,$category,$events_query) {
 }
 
 /* draws a calendar */
-function draw_calendar($month,$year,$category){
+function d4events_draw_calendar($month,$year,$category){
 	if ($month == '') {
 		$month = date("n");
 	}
@@ -649,50 +573,9 @@ function d4_ajax_cal_change() {
 			$nextyear = $year-'1';
 	}
 	else $nextyear = $year;		
-    echo draw_calendar($nextmonth,$nextyear,$category);
+    echo d4events_draw_calendar($nextmonth,$nextyear,$category);
     die();
 }
-
-// Use: [events year="" month="" category=""]
-	function shortcode_events( $atts ) {
-		$attr=shortcode_atts(array(
-			'year' => '',
-			'month'=>'',
-			'search' => '',
-			'category' => '',
-			'agenda' => '',
-		), $atts);
-
-		$month = date("n");
-		if ($attr['year'] != '') {
-			$year = date("Y");
-		}
-		if ($attr['search'] != '') {
-			$search = '<form class="search-form" role="search" method="get"action="';
-			$search .= home_url( '/' );
-			$search .= '">';
-			$search .= '<input type="hidden" name="post_type" value="events" />';
-			$search .= '<label><span class="screenreader">Search for:</span><input class="search-field" type="search" placeholder="Search Events..." value="" name="s" title="Search for:" /></label><input class="search-submit" type="submit" value="Submit" /></form>';
-		}
-		if ($attr['category'] != '') {
-			$category = $attr['category'];
-		}
-		if ($attr['agenda'] != '') {
-			$agenda = 'class="agenda-view"';
-		}
-
-		$event_calendar = draw_calendar($month,$year,$category);
-		$buttons = '<div class="cal-change-button cal-prev" data-change="cal-prev">Previous</div><div class="cal-change-button cal-next" data-change="cal-next">Next</div>';
-
-		$output = '';
-		$output .= '<div id="d4-cal-wrapper"'.$agenda.'>';
-		$output .= $search;
-		$output .= '<div id="d4-cal-inner">';
-		$output .= $event_calendar;
-		$output .= '</div></div>';	
-
-		return $output;
-	} add_shortcode( 'events', 'shortcode_events' );
 
 //Load the single event template
 function get_d4events_template($single_template) {
@@ -713,15 +596,5 @@ function d4events_after_main_content() {
 	do_action('d4events_after_main_content');
 }
 
-function d4_events_wrapper_start() {
-  echo '<section id="content"><div id="title-bar"><div class="page-wrapper"><h1 class="page-title">'.get_the_title().'</h1></div></div><div class="page-wrapper"><main id="main-content" class="clearfix" role="main">';
-}
-
-function d4_events_wrapper_end() {
-  echo '</main></div></section>';
-}
-
 add_action('d4events_before_main_content', 'd4_events_wrapper_start', 10);
 add_action('d4events_after_main_content', 'd4_events_wrapper_end', 10);
-
-?>
