@@ -10,9 +10,6 @@ $location = get_post_meta( $post->ID, 'd4events_location', true );
 $registration_link = get_post_meta( $post->ID, 'd4events_registration_link', true );
 $timezone = get_post_meta( $post->ID, 'd4events_timezone', true );
 
-$options = get_option('d4events_options');
-$api_key = $options['api_key'];
-
 //Create addtocalendar.com readable values
 if (strtotime($start_time) == strtotime('xyz')) {
 	$start_time_adjusted = '12:00am';
@@ -66,7 +63,7 @@ d4events_before_main_content();
 			' width="100%"'.
 			' height="300px"'.
 			' frameborder="0" style="border:0"'.
-			' src="https://www.google.com/maps/embed/v1/search?key='.$api_key.'&q='.$location.'&zoom=15">'.
+			' src="https://www.google.com/maps/embed/v1/search?key='.$d4events_apikey.'&q='.$location.'&zoom=15">'.
 			' </iframe>';
 		}
 		if ($registration_link != '') {
