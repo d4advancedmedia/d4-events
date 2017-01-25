@@ -50,7 +50,7 @@ function d4events_posttype() {
 		'capability_type'       => 'page',
 		'menu_icon'				=> 'dashicons-calendar-alt',
 	);
-	register_post_type( 'events', $args );
+	register_post_type( 'd4events', $args );
 
 }
 add_action( 'init', 'd4events_posttype', 0 );
