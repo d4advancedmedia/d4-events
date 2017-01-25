@@ -15,7 +15,11 @@ $d4events_apikey = 'AIzaSyCyYncL5imWnSmhF1PXk5NckeM4dObSZ4k';
 
 /* --- Set the theme wrapper --- */
 function d4_events_wrapper_start() {
-  echo '<section id="content"><div id="title-bar"><div class="page-wrapper"><h1 class="page-title">'.get_the_title().'</h1></div></div><div class="page-wrapper"><main id="main-content" class="clearfix" role="main">';
+
+echo '<section id="content">';
+get_template_part( 'inc/chunk' , 'title' );
+
+  echo '<div class="page-wrapper"><main id="main-content" class="clearfix" role="main">';
 }
 
 function d4_events_wrapper_end() {

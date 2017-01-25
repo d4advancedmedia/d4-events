@@ -34,7 +34,7 @@ function d4events_posttype() {
 		'label'                 => __( 'Event', 'events' ),
 		'description'           => __( 'Events', 'events' ),
 		'labels'                => $labels,
-		'supports'              => array( 'title', 'editor', 'excerpt', 'revisions','custom-fields' ),
+		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions','custom-fields' ),
 		'taxonomies'            => array( 'category', 'post_tag' ),
 		'hierarchical'          => false,
 		'public'                => true,
@@ -44,7 +44,7 @@ function d4events_posttype() {
 		'show_in_admin_bar'     => true,
 		'show_in_nav_menus'     => true,
 		'can_export'            => true,
-		'has_archive'           => true,		
+		'has_archive'           => false,		
 		'exclude_from_search'   => false,
 		'publicly_queryable'    => true,
 		'capability_type'       => 'page',
@@ -209,19 +209,51 @@ $d4events_meta_fields = array(
 	        ),
     	),
     ),
+    array(
+        'label'=> 'Files',
+        'desc'  => 'File URL',
+        'id'    => $prefix.'file_',
+        'number' => 1,
+        'type'  => 'multipass',
+        'multipass_opts' => array('Agenda','Minutes','Image','Other')
+    ),
 );
+
+function multipass_counter() {
+
+	$continue = true;
+
+	for ($k = 1 ; $continue; $k++) {
+
+		unset($multimeta);		
+		$multimeta = get_post_meta(get_the_ID(), 'd4events_file_'.$k, true);
+		if (empty($multimeta)) {
+			$continue = false;
+		}
+	}
+
+	//The above for statement will run once before it fails, even if there isn't any meta saved, resulting in $k = actual_metacount + 2. Subtracting two will ensure that the counter returns the actual number of meta entries in the db
+	$total = $k - 2;
+
+	return $total;
+}
 
 // The Callback
 function show_d4events_meta_box() {
 global $d4events_meta_fields, $post;
 // Use nonce for verification
 echo '<input type="hidden" name="d4events_meta_box_nonce" value="'.wp_create_nonce(basename(__FILE__)).'" />';
+
+	#echo '<input type="hidden" name="events_errors" value="" />';
      
     // Begin the field table and loop
     echo '<div class="form-table">';
+    #echo '<div class="events-errors">'.$_GET('events_errors').'</div>';	
+
     foreach ($d4events_meta_fields as $field) {
         // get value of this field if it exists for this post
-        $meta = get_post_meta($post->ID, $field['id'], true);
+        $meta = get_post_meta($post->ID, $field['id'], true);          
+
         // begin a table row with
         echo '<div class="events-meta-row row-'.$field['id'].'">
                 <label for="'.$field['id'].'">'.$field['label'].'</label>
@@ -230,7 +262,10 @@ echo '<input type="hidden" name="d4events_meta_box_nonce" value="'.wp_create_non
                     // case items will go here
 	                    // date
 						case 'date':
-							echo '<input type="text" class="datepicker" name="'.$field['id'].'" id="'.$field['id'].'" value="'.$meta.'" size="30" />
+							if ($meta == '') {
+								$meta = date("m/d/Y");
+							}
+							echo '<input type="text" class="datepicker" name="'.$field['id'].'" id="'.$field['id'].'" value="'.date("M d,Y", strtotime($meta)).'" size="30" />
 									<br /><span class="description">'.$field['desc'].'</span>';
 						break;
 
@@ -277,6 +312,48 @@ echo '<input type="hidden" name="d4events_meta_box_nonce" value="'.wp_create_non
 						                <label for="'.$option['value'].'">'.$option['label'].'</label><br />';
 						    }
 						break;
+
+						// multipass
+						case 'multipass':
+
+							//determine number of multipass					
+    						$multicount = multipass_counter();
+
+    						//make sure that there is always one field
+    						if ($multicount == 0) {
+    							$multicount = 1;
+    						}
+    						echo '<div class="multipass-wrap" total='.$multicount.'>';
+							for ($k = 1 ; $k <= $multicount; $k++) {	
+
+								$meta = get_post_meta($post->ID, $field['id'].$k, true);
+
+								
+									echo '<div class="singlepass">'.
+										'<div class="multipass-select">'.									
+											'<select name="'.$field['id'].$k.'[0]" id="type_'.$field['id'].$k.'">';
+										    foreach ($field['multipass_opts'] as $option) {
+										        echo '<option', $meta[0] == $option ? ' selected="selected"' : '', ' value="'.$option.'">'.$option.'</option>';
+										    }
+										    echo '</select><br /><span class="description">Category</span>'.
+										'</div>'.
+
+										'<div class="multipass-text">'.
+										    '<input class="event-filename" type="text" placeholder="" name="'.$field['id'].$k.'[2]" id="name_'.$field['id'].$k.'" value="'.$meta[2].'" size="30" />										   
+										        <br /><span class="description">File Name</span>'.
+										'</div>'.
+
+										'<div class="multipass-text">'.
+										    '<input class="event-fileurl" type="text" placeholder="'.$field['placeholder'].'" name="'.$field['id'].$k.'[1]" id="'.$field['id'].$k.'" value="'.$meta[1].'" size="30" />
+										    	<input type="button" class="multipass_upload button-secondary" id="'.$field['id'].$k.'_multipass_upload"	name="'.$field['id'].$k.'_multipass_upload"	value="Upload" >
+										        <br /><span class="description">'.$field['desc'].'</span>';
+										echo '</div><div class="multi-delete">&#x274c;</div>'.
+									'<div class="clearfix"></div></div>';
+								
+							}
+								echo '<span class="multi-add button-secondary"><span>+</span> Add More Files</span>'.
+							'</div>';
+						break;
                 } //end switch
 
                 // Add special timezone selection field
@@ -304,23 +381,74 @@ function save_d4events_meta($post_id) {
         } elseif (!current_user_can('edit_post', $post_id)) {
             return $post_id;
     }
-     
+    
+    #$_POST('events_errors') = '';
+
+    if ( ($_POST['d4events_start_date'] == '') && ($_POST['d4events_end_date'] == '')) {
+		$_POST['d4events_start_date'] = date("m/d/Y");
+		$_POST['d4events_end_date'] = date("m/d/Y");
+
+		#$_POST('events_errors') .= 'The Start Date and End Date are required fields and both will default to the current date if left blank.';	
+	}
+
+	if ( ($_POST['d4events_start_date'] == '') && ($_POST['d4events_end_date'] != '')) {
+		$_POST['d4events_start_date'] = $_POST['d4events_end_date'];
+
+		#$_POST('events_errors') .= 'The End Date is a required field and will default to the current date if left blank.';
+	}
+
+	if ( ($_POST['d4events_start_date'] != '') && ($_POST['d4events_end_date'] == '')) {
+		$_POST['d4events_end_date'] = $_POST['d4events_start_date'];
+
+		#$_POST('events_errors') .= 'The Start Date is a required field and will default to the current date if left blank.';
+	}
+
+	if ( (strtotime($_POST['d4events_start_date'])) > (strtotime($_POST['d4events_end_date'])) ) {
+		$_POST['d4events_end_date'] = $_POST['d4events_start_date'];
+
+		#$_POST('events_errors') .= 'The End Date cannot be later than the Start Date.';
+	}
+
     // loop through fields and save the data
     foreach ($d4events_meta_fields as $field) {
         $old = get_post_meta($post_id, $field['id'], true);
         $new = $_POST[$field['id']];
-        if ($_POST[$field['id']] == 'day_of_the_week') {
+
+        if ($field['id'] == 'd4events_start_date') {
+        	update_post_meta( $post_id, 'd4events_start_date', date("Y-m-d", strtotime($_POST['d4events_start_date'])) );
+        }
+        elseif ($field['id'] == 'd4events_end_date') {
+        	update_post_meta( $post_id, 'd4events_end_date', date("Y-m-d", strtotime($_POST['d4events_end_date'])) );
+        }
+        elseif ($_POST[$field['id']] == 'day_of_the_week') {
         	$repeat_interval = ceil(date('j', strtotime($_POST['d4events_start_date'])) / 7);
         	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
         	$month_weekday_repeat = date('l', strtotime($_POST['d4events_start_date']));
         	update_post_meta($post_id, 'd4events_month_weekday_repeat', $month_weekday_repeat);
         }
-        if ($_POST[$field['id']] == 'day_of_the_month') {
+        elseif ($_POST[$field['id']] == 'day_of_the_month') {
         	$repeat_interval = date('j', strtotime($_POST['d4events_start_date']));
         	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
         	delete_post_meta($post_id, 'd4events_month_weekday_repeat');
         }
-        if ($new && $new != $old) {
+        elseif ($field['type'] == 'multipass') {
+
+        	//clear out all existing metadata to ensure that keys increment by 1, starting with 1
+        	$multicount = multipass_counter();
+			for ($i = 1 ; $i <= $multicount; $i++) {
+				delete_post_meta($post_id, 'd4events_file_'.$i, $_POST[$field['id'].$i]);
+			}	
+
+			//save in all fields
+        	$k = 0;
+        	foreach($_POST as $key => $value) {
+			    if (strpos($key, 'd4events_file_') === 0) {
+			    	$k++;
+			        update_post_meta($post_id, 'd4events_file_'.$k, $_POST[$field['id'].$k]);
+			    }
+			}
+        }
+        elseif ($new && $new != $old) {
             update_post_meta($post_id, $field['id'], $new);
         } elseif ('' == $new && $old) {
             delete_post_meta($post_id, $field['id'], $old);
@@ -429,7 +557,7 @@ function get_events($event_date,$category,$events_query) {
 }
 
 /* draws a calendar */
-function d4events_draw_calendar($month,$year,$category){
+function d4events_draw_calendar($month,$year,$category,$exclude_category){
 	if ($month == '') {
 		$month = date("n");
 	}
@@ -457,7 +585,8 @@ function d4events_draw_calendar($month,$year,$category){
 	# get all events, place in array to send to get_events()
 	$events_args = array (
 		'post_type' => 'events',
-		'category_name'	=> $category	
+		'category_name'	=> $category,
+		'category__not_in' => $exclude_category	
 	);
 	$events_query = new WP_Query($events_args);
 
@@ -486,6 +615,7 @@ function d4events_draw_calendar($month,$year,$category){
 			$fixed_month = $month;
 		}
 		$fulldate = $fixed_month.'/'.$fixed_day.'/'.$year;
+		$calendar .= $fulldate;
 		$day_events = get_events($fulldate,$category,$events_query);
 
 		if (!empty($day_events)) {
@@ -532,6 +662,99 @@ function d4events_draw_calendar($month,$year,$category){
 	
 	/* all done, return result */
 	return $calendar;
+}
+
+
+/* draws an annual agenda */
+function d4events_draw_agenda($month,$year,$category,$exclude_category){
+	$year = date("Y");
+	for ($i = 1; $i <= 12; $i++) {
+		$month = date('n', mktime(0, 0, 0, $i, 1, $year));
+		$month_events .= d4events_draw_calendar($month,$year,$category,$exclude_category);
+	}
+	return $month_events;
+}
+
+function get_list_events($links,$files,$thumbnail_size) {
+
+	$link_open = '';
+	$link_close = '';
+	$readmore = '';
+
+	if ($links == 'true') {
+		$link_open = '<a href="'.get_the_permalink().'">';	
+		$link_close = '</a>';
+		$readmore = '<a class="events_list-readmore" href="'.get_the_permalink().'">Read More</a>';
+	}
+
+	if (isset($files)) {
+
+		$file_array = array();
+		//determine number of multipass					
+		$multicount = multipass_counter();
+		
+		for ($k = 1 ; $k <= $multicount; $k++) {			
+			$meta = get_post_meta(get_the_ID(), 'd4events_file_'.$k, true);
+			$file_type = $meta[0];
+			if ($meta[2] != '') {
+				$file_name = $meta[2];
+			} else {
+				$file_name = end((explode('/', rtrim($meta[1], '/'))));
+			}
+			$file_class = 'fileclass_'.pathinfo($meta[1])['extension'];
+			$file_link = '<a href="'.$meta[1].'" class="events_files '.$file_class.'" target="_blank">'.$file_name.'</a>';
+			
+			$file_array[] = array(
+					'type' => $file_type,
+					'name' => $file_name,
+					'link' => $file_link,
+			);
+			
+		}
+	}
+
+	//This is the array of file categories listed in the shortcode, so that the files can be sorted by category (ex: Agenda, Meeting, Minutes)
+	$shortcode_filearray = explode(',',$files);
+
+	if (isset($files) && ($files != '')) {
+
+		$file_cluster = '';
+		$filetype_title = '';
+		
+		$file_cluster .= '<div class="files-wrapper">';
+		foreach ($shortcode_filearray as $type) {	
+			$i = 1;					
+			foreach ($file_array as $file) {
+				if ($type == strtolower($file['type'])) {
+					if ($filetype_title == $file['type']) {									
+						$file_cluster .= $file['link'];	
+					} else {
+						if ($i != 1) {$file_cluster .= '</div>';}
+						$file_cluster .= '<div class="event-filegroup"><h6 class="event-filetype">'.$file['type'].'</h6>';
+						$file_cluster .= $file['link'];
+						$filetype_title = $file['type'];
+					}
+					
+				}
+				$i++;
+			}
+		}
+		$file_cluster .= '</div></div>';
+	}
+	$post_thumbnail = '';
+	if (has_post_thumbnail()) {
+		$post_thumbnail = '<div class="events_list-thumb">'.$link_open.get_the_post_thumbnail(get_the_ID(),$thumbnail_size).$link_close.'</div>';
+	}
+
+	$event_content .= '<div class="events_list-single">';
+	$event_content .= $post_thumbnail;	
+	$event_content .= '<h5 class="cal-event-title">'.$link_open.get_the_title().$link_close.'<span class="events_list-datetime"><span class="events_list-date">'.date("m/d/Y", strtotime(get_post_meta( get_the_ID(), 'd4events_start_date', true ))).'</span></span></h5>';
+	$event_content .= '<p class="events_list-description">'.get_the_excerpt().'</p>';
+	$event_content .= $readmore;
+	$event_content .= $file_cluster;
+	$event_content .= '<div class="clearfix"></div></div>';
+
+	return $event_content;
 }
 
 

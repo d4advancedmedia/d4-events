@@ -1,4 +1,4 @@
-#postcustom {
+.post-type-events #postcustom {
   display: none;
 }
 .row-d4events_end_date label, .row-d4events_end_time label, .row-d4events_start_date label, .row-d4events_start_time label {
@@ -15,4 +15,53 @@
   display: inline;
   float: left;
   padding: 0;
+}
+/*.post-type-events #the-list tr:nth-child(-n+7) {
+  display: none;
+}*/
+.singlepass {
+  background: #f9f9f9 none repeat scroll 0 0;
+  border: 1px solid #efefef;
+  border-radius: 1px;
+  margin: 4px 0;
+  max-width: 740px;
+  padding: 10px;
+}
+.singlepass div {
+  float: left;
+}
+.clearfix::before, .clearfix::after {
+  content: ".";
+  display: block;
+  font-size: 0;
+  height: 0;
+  line-height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+}
+.clearfix::after {
+  clear: both;
+}
+.clearfix {
+  float: none !important;
+}
+.row-d4events_file_ {
+  border-top: 1px dashed #cdcdcd;
+  display: block !important;
+  margin-top: 30px;
+}
+.row-d4events_file_ > label {
+  font-weight: bold;
+}
+.multi-delete {
+  background: tomato none repeat scroll 0 0;
+  border-radius: 2px;
+  color: #fff;
+  cursor: pointer;
+  float: right !important;
+  font-size: 12px;
+  height: 16px;
+  text-align: center;
+  width: 16px;
 }

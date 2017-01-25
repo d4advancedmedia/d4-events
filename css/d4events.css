@@ -140,6 +140,100 @@ td.calendar-day-head {
 #main-content .atcb-item a:hover {
     color: #fff;
 }
+/* List Style */
+.events-style_list h5 {
+  background: #333 none repeat scroll 0 0;
+  color: #fff;
+  font-size: 19px;
+  margin-bottom: 0;
+  padding: 15px;
+}
+#d4-cal-wrapper.events-style_list {
+  background: #efefef none repeat scroll 0 0;
+  padding: 30px;
+}
+.events_list-datetime {
+  display: block;
+  float: right;
+  font-size: 0.7em;
+  font-weight: normal;
+}
+.events_list-datetime {
+  display: block;
+  float: right;
+  font-size: 0.7em;
+  font-weight: normal;
+}
+.events_list-time {
+  border-left: 1px solid #cdcdcd;
+  margin-left: 7px;
+  padding-left: 7px;
+}
+.list-single-event {
+  background: #f9f9f9 none repeat scroll 0 0;
+  border: 1px solid #cdcdcd;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  padding: 15px;
+}
+.events_list-thumb img {
+  background: #fff none repeat scroll 0 0;
+  border: 10px solid #fff;
+  float: left;
+  margin: 0 20px 20px 0;
+}
+.events_list-single {
+  background: #f9f9f9 none repeat scroll 0 0;
+  border: 1px solid #cdcdcd;
+  border-radius: 3px;
+  clear: both;
+  margin-bottom: 20px;
+  overflow: hidden;
+  padding: 0 0 20px;
+}
+#d4-cal-wrapper a.events_list-readmore {
+  background: #279ad1 none repeat scroll 0 0;
+  border-radius: 2px;
+  color: #fff;
+  padding: 5px 15px;
+}
+/* Files Feature */
+.files-wrapper {
+  padding: 15px;
+}
+#d4-cal-wrapper a.events_files {
+  background: #1a78b2 none repeat scroll 0 0;
+  border-radius: 2px;
+  color: #fff;
+  display: inline-block;
+  font-size: 0.8em;
+  margin-right: 2px;
+  min-width: 100px;
+  padding: 3px 9px;
+}
+.events_files.fileclass_pdf::before {
+  content: "";
+  font-family: "icomoon";
+  font-size: 20px;
+  margin-right: 5px;
+  position: relative;
+  top: 4px;
+}
+h6.event-filetype {
+  border-bottom: 1px dashed #cdcdcd;
+  font-size: 1em;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+}
+.event-filegroup {
+  background: #fff none repeat scroll 0 0;
+  border: 1px solid #cdcdcd;
+  border-radius: 2px;
+  float: left;
+  margin: 3px;
+  padding: 7px;
+  text-align: center;
+}
 /*Agenda View (Same as mobile)*/
 .agenda-view td.calendar-day, .agenda-view td.calendar-day-np {
   display: none;
