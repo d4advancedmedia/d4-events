@@ -446,9 +446,9 @@ function save_d4events_meta($post_id) {
 			//save in all fields
         	$k = 0;
         	foreach($_POST as $key => $value) {
-			    if (strpos($key, 'd4events_file_') === 0) {
-			    	$k++;
-			        update_post_meta($post_id, 'd4events_file_'.$k, $_POST[$field['id'].$k]);
+			    if (strpos($key, 'd4events_file_') === 0) {			    	
+		    		$k++;
+		        	update_post_meta($post_id, 'd4events_file_'.$k, $_POST[$field['id'].$k]);
 			    }
 			}
         }
@@ -691,60 +691,8 @@ function get_list_events($links,$files,$thumbnail_size) {
 		$readmore = '<a class="events_list-readmore" href="'.get_the_permalink().'">Read More</a>';
 	}
 
-	if (isset($files)) {
+	$file_cluster = d4events_get_files($files);
 
-		$file_array = array();
-		//determine number of multipass					
-		$multicount = multipass_counter();
-		
-		for ($k = 1 ; $k <= $multicount; $k++) {			
-			$meta = get_post_meta(get_the_ID(), 'd4events_file_'.$k, true);
-			$file_type = $meta[0];
-			if ($meta[2] != '') {
-				$file_name = $meta[2];
-			} else {
-				$file_name = end((explode('/', rtrim($meta[1], '/'))));
-			}
-			$file_class = 'fileclass_'.pathinfo($meta[1])['extension'];
-			$file_link = '<a href="'.$meta[1].'" class="events_files '.$file_class.'" target="_blank">'.$file_name.'</a>';
-			
-			$file_array[] = array(
-					'type' => $file_type,
-					'name' => $file_name,
-					'link' => $file_link,
-			);
-			
-		}
-	}
-
-	//This is the array of file categories listed in the shortcode, so that the files can be sorted by category (ex: Agenda, Meeting, Minutes)
-	$shortcode_filearray = explode(',',$files);
-
-	if (isset($files) && ($files != '')) {
-
-		$file_cluster = '';
-		$filetype_title = '';
-		
-		$file_cluster .= '<div class="files-wrapper">';
-		foreach ($shortcode_filearray as $type) {	
-			$i = 1;					
-			foreach ($file_array as $file) {
-				if ($type == strtolower($file['type'])) {
-					if ($filetype_title == $file['type']) {									
-						$file_cluster .= $file['link'];	
-					} else {
-						if ($i != 1) {$file_cluster .= '</div>';}
-						$file_cluster .= '<div class="event-filegroup"><h6 class="event-filetype">'.$file['type'].'</h6>';
-						$file_cluster .= $file['link'];
-						$filetype_title = $file['type'];
-					}
-					
-				}
-				$i++;
-			}
-		}
-		$file_cluster .= '</div></div>';
-	}
 	$post_thumbnail = '';
 	if (has_post_thumbnail()) {
 		$post_thumbnail = '<div class="events_list-thumb">'.$link_open.get_the_post_thumbnail(get_the_ID(),$thumbnail_size).$link_close.'</div>';
@@ -753,12 +701,76 @@ function get_list_events($links,$files,$thumbnail_size) {
 	$event_content .= '<div class="events_list-single">';
 	$event_content .= $post_thumbnail;	
 	$event_content .= '<h5 class="cal-event-title">'.$link_open.get_the_title().$link_close.'<span class="events_list-datetime"><span class="events_list-date">'.date("m/d/Y", strtotime(get_post_meta( get_the_ID(), 'd4events_start_date', true ))).'</span><span class="events_list-time">'.get_post_meta( get_the_ID(), 'd4events_start_time', true ).'</span></span></h5>';
-	$event_content .= '<p class="events_list-description">'.get_the_excerpt().'</p>';
-	$event_content .= $readmore;
+	$event_content .= '<div class="events_list-content"><p class="events_list-description">'.get_the_excerpt().'</p>';
+	$event_content .= $readmore.'<div class="clearfix"></div>';
 	$event_content .= $file_cluster;
-	$event_content .= '<div class="clearfix"></div></div>';
+	$event_content .= '<div class="clearfix"></div></div></div>';
 
 	return $event_content;
+}
+
+function d4events_get_files($files) {
+
+	if (isset($files)) {
+
+		$file_array = array();
+		//determine number of multipass					
+		$multicount = multipass_counter();
+		
+		for ($k = 1 ; $k <= $multicount; $k++) {			
+			$meta = get_post_meta(get_the_ID(), 'd4events_file_'.$k, true);
+			if (isset($meta[1])) {				
+				$file_type = $meta[0];
+				if ($meta[2] != '') {
+					$file_name = $meta[2];
+				} else {
+					$file_name = end((explode('/', rtrim($meta[1], '/'))));
+				}
+				$file_class = 'fileclass_'.pathinfo($meta[1])['extension'];
+				$file_link = '<a href="'.$meta[1].'" class="events_files '.$file_class.'" target="_blank">'.$file_name.'</a>';
+				
+				$file_array[] = array(
+						'type' => $file_type,
+						'name' => $file_name,
+						'link' => $file_link,
+				);
+			}
+			
+		}
+	}
+
+	//This is the array of file categories listed in the shortcode, so that the files can be sorted by category (ex: Agenda, Meeting, Minutes)
+	$shortcode_filecats = explode(',',$files);
+
+	if (isset($files) && ($files != '') && ($multicount != 0)) {
+
+		$file_cluster = '';
+		$filetype_title = '';
+		
+		$file_cluster .= '<div class="files-wrapper">';
+		foreach ($shortcode_filecats as $type) {	
+			$i = 1;
+			$file_cluster .= '<div class="event-filegroup">';					
+			foreach ($file_array as $file) {
+				if ( ($type == strtolower($file['type'])) && ($file['link'] != '') ) {
+					if ($filetype_title == $file['type']) {									
+						$file_cluster .= $file['link'];	
+					} else {
+						$file_cluster .= '<h6 class="event-filetype">'.$file['type'].'</h6>';
+						$file_cluster .= $file['link'];
+						$filetype_title = $file['type'];
+					}
+					
+				}
+				$i++;
+			}
+			$file_cluster .= '</div>';
+		}
+		$file_cluster .= '</div>';
+	}
+
+	return $file_cluster;
+
 }
 
 
@@ -809,8 +821,8 @@ function get_d4events_template($single_template) {
      global $post;
 
      if ($post->post_type == 'd4events') {
-      	$single_template .= dirname( __FILE__ ) . '/single-event.php';
-     }
+      	$single_template = dirname( __FILE__ ) . '/single-event.php';
+     }  
      return $single_template;
 }
 add_filter( 'single_template', 'get_d4events_template' );
