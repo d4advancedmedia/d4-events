@@ -65,7 +65,7 @@
 		
 		elseif ($attr['style'] == 'list') {			
 			$events_args = array (
-				'post_type' => 'events',
+				'post_type' => 'd4events',
 				'category_name'	=> $category,
 				'category__not_in' => $exclude_category,
 				//'post_status' => array( 'pending', 'future', 'publish')	,

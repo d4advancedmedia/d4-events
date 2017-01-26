@@ -198,27 +198,28 @@ td.calendar-day-head {
   padding: 5px 15px;
 }
 /* Files Feature */
-.files-wrapper {
-  padding: 15px;
+#d4-cal-wrapper .files-wrapper {
+  padding: 0 15px;
 }
 #d4-cal-wrapper a.events_files {
   background: #1a78b2 none repeat scroll 0 0;
   border-radius: 2px;
   color: #fff;
-  display: inline-block;
+  display: block;
   font-size: 0.8em;
+  margin-bottom: 3px;
   margin-right: 2px;
   min-width: 100px;
   padding: 3px 9px;
 }
-.events_files.fileclass_pdf::before {
+/*.events_files.fileclass_pdf::before {
   content: "";
   font-family: "icomoon";
   font-size: 20px;
   margin-right: 5px;
   position: relative;
   top: 4px;
-}
+}*/
 h6.event-filetype {
   border-bottom: 1px dashed #cdcdcd;
   font-size: 1em;
@@ -249,7 +250,7 @@ h6.event-filetype {
   display: block;
 }
 /*Mobile*/
-@media all and (max-width: 640px)  {
+@media all and (max-width: 675px)  {
 td.calendar-day, td.calendar-day-np {
   display: none;
   width: 100% !important;
@@ -262,5 +263,12 @@ td.calendar-day-head {
 }
 td.calendar-day.has-events {
   display: block;
+}
+.events_list-datetime {
+  float: none;
+  margin-top: 7px;
+}
+#d4-cal-wrapper.events-style_list {
+  padding: 10px 10px 0;
 }
 }

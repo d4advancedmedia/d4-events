@@ -56,9 +56,9 @@ new_singlepass = jQuery('.singlepass:first-child').clone();
 
 		var newpass = $(new_singlepass).clone();
 
-		$(newpass).find('select').val( '' ).attr('id','type_d4events_file_' + increase_one).attr('name','d4events_file_' + increase_one + '[]');
-		$(newpass).find('.event-filename').val( '' ).attr('id','name_d4events_file_' + increase_one).attr('name','d4events_file_' + increase_one + '[]');
-		$(newpass).find('.event-fileurl').val( '' ).attr('id','d4events_file_' + increase_one).attr('name','d4events_file_' + increase_one + '[]');
+		$(newpass).find('select').val( '' ).attr('id','type_d4events_file_' + increase_one).attr('name','d4events_file_' + increase_one + '[0]');
+		$(newpass).find('.event-filename').val( '' ).attr('id','name_d4events_file_' + increase_one).attr('name','d4events_file_' + increase_one + '[2]');
+		$(newpass).find('.event-fileurl').val( '' ).attr('id','d4events_file_' + increase_one).attr('name','d4events_file_' + increase_one + '[1]');
 		$(newpass).find('input[type=button]').attr('id','d4events_file_' + increase_one + '_multipass_upload').attr('name','d4events_file_' + increase_one + '_multipass_upload');
 
 		$(this).before(newpass);
@@ -74,9 +74,9 @@ new_singlepass = jQuery('.singlepass:first-child').clone();
 			$(this).parent().remove();
 			var total = 1;
 			$('.singlepass').each(function() {
-				$(this).find('select').attr('id','type_d4events_file_' + total).attr('name','d4events_file_' + total + '[]');
-				$(this).find('.event-filename').attr('id','name_d4events_file_' + total).attr('name','d4events_file_' + total + '[]');
-				$(this).find('.event-fileurl').attr('id','d4events_file_' + total).attr('name','d4events_file_' + total + '[]');
+				$(this).find('select').attr('id','type_d4events_file_' + total).attr('name','d4events_file_' + total + '[0]');
+				$(this).find('.event-filename').attr('id','name_d4events_file_' + total).attr('name','d4events_file_' + total + '[2]');
+				$(this).find('.event-fileurl').attr('id','d4events_file_' + total).attr('name','d4events_file_' + total + '[1]');
 				$(this).find('input[type=button]').attr('id','d4events_file_' + total + '_multipass_upload').attr('name','d4events_file_' + total + '_multipass_upload');
 				total++;
 			});

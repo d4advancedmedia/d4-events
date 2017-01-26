@@ -1,4 +1,4 @@
-.post-type-events #postcustom {
+.post-type-d4events #postcustom {
   display: none;
 }
 .row-d4events_end_date label, .row-d4events_end_time label, .row-d4events_start_date label, .row-d4events_start_time label {
@@ -16,7 +16,7 @@
   float: left;
   padding: 0;
 }
-/*.post-type-events #the-list tr:nth-child(-n+7) {
+/*.post-type-d4events #the-list tr:nth-child(-n+7) {
   display: none;
 }*/
 .singlepass {

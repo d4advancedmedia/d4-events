@@ -1,38 +1,42 @@
 <?php
 
-// Register Events Post Type
+// Register Meeting Events Post Type
 function d4events_posttype() {
 
+	global $d4events_posttype_singular;
+	global $d4events_posttype_plural;
+	global $d4events_icon;
+
 	$labels = array(
-		'name'                  => _x( 'Events', 'Post Type General Name', 'events' ),
-		'singular_name'         => _x( 'Event', 'Post Type Singular Name', 'events' ),
-		'menu_name'             => __( 'Events', 'events' ),
-		'name_admin_bar'        => __( 'Event', 'events' ),
-		'archives'              => __( 'Event Archives', 'events' ),
-		'parent_item_colon'     => __( 'Parent Event:', 'events' ),
-		'all_items'             => __( 'All Events', 'events' ),
-		'add_new_item'          => __( 'Add New Event', 'events' ),
-		'add_new'               => __( 'Add New', 'events' ),
-		'new_item'              => __( 'New Event', 'events' ),
-		'edit_item'             => __( 'Edit Event', 'events' ),
-		'update_item'           => __( 'Update Event', 'events' ),
-		'view_item'             => __( 'View Event', 'events' ),
-		'search_items'          => __( 'Search Events', 'events' ),
-		'not_found'             => __( 'Not found', 'events' ),
-		'not_found_in_trash'    => __( 'Not found in Trash', 'events' ),
-		'featured_image'        => __( 'Featured Image', 'events' ),
-		'set_featured_image'    => __( 'Set featured image', 'events' ),
-		'remove_featured_image' => __( 'Remove featured image', 'events' ),
-		'use_featured_image'    => __( 'Use as featured image', 'events' ),
-		'insert_into_item'      => __( 'Insert into item', 'events' ),
-		'uploaded_to_this_item' => __( 'Uploaded to this item', 'events' ),
-		'items_list'            => __( 'Items list', 'events' ),
-		'items_list_navigation' => __( 'Items list navigation', 'events' ),
-		'filter_items_list'     => __( 'Filter items list', 'events' ),
+		'name'                  => _x( $d4events_posttype_plural, 'Post Type General Name', 'd4events' ),
+		'singular_name'         => _x( $d4events_posttype_singular, 'Post Type Singular Name', 'd4events' ),
+		'menu_name'             => __( 'Meetings', 'd4events' ),
+		'name_admin_bar'        => __( $d4events_posttype_singular, 'd4events' ),
+		'archives'              => __( $d4events_posttype_singular.' Archives', 'd4events' ),
+		'parent_item_colon'     => __( 'Parent '.$d4events_posttype_singular.':', 'd4events' ),
+		'all_items'             => __( 'All '.$d4events_posttype_plural, 'd4events' ),
+		'add_new_item'          => __( 'Add New '.$d4events_posttype_singular, 'd4events' ),
+		'add_new'               => __( 'Add New', 'd4events' ),
+		'new_item'              => __( 'New '.$d4events_posttype_singular, 'd4events' ),
+		'edit_item'             => __( 'Edit '.$d4events_posttype_singular, 'd4events' ),
+		'update_item'           => __( 'Update '.$d4events_posttype_singular, 'd4events' ),
+		'view_item'             => __( 'View '.$d4events_posttype_singular, 'd4events' ),
+		'search_items'          => __( 'Search '.$d4events_posttype_plural, 'd4events' ),
+		'not_found'             => __( 'Not found', 'd4events' ),
+		'not_found_in_trash'    => __( 'Not found in Trash', 'd4events' ),
+		'featured_image'        => __( 'Featured Image', 'd4events' ),
+		'set_featured_image'    => __( 'Set featured image', 'd4events' ),
+		'remove_featured_image' => __( 'Remove featured image', 'd4events' ),
+		'use_featured_image'    => __( 'Use as featured image', 'd4events' ),
+		'insert_into_item'      => __( 'Insert into item', 'd4events' ),
+		'uploaded_to_this_item' => __( 'Uploaded to this item', 'd4events' ),
+		'items_list'            => __( 'Items list', 'd4events' ),
+		'items_list_navigation' => __( 'Items list navigation', 'd4events' ),
+		'filter_items_list'     => __( 'Filter items list', 'd4events' ),
 	);
 	$args = array(
-		'label'                 => __( 'Event', 'events' ),
-		'description'           => __( 'Events', 'events' ),
+		'label'                 => __( $d4events_posttype_singular, 'd4events' ),
+		'description'           => __( 'd4events', 'd4events' ),
 		'labels'                => $labels,
 		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions','custom-fields' ),
 		'taxonomies'            => array( 'category', 'post_tag' ),
@@ -40,7 +44,7 @@ function d4events_posttype() {
 		'public'                => true,
 		'show_ui'               => true,
 		'show_in_menu'          => true,
-		'menu_position'         => 5,
+		'menu_position'         => 2,
 		'show_in_admin_bar'     => true,
 		'show_in_nav_menus'     => true,
 		'can_export'            => true,
@@ -48,7 +52,7 @@ function d4events_posttype() {
 		'exclude_from_search'   => false,
 		'publicly_queryable'    => true,
 		'capability_type'       => 'page',
-		'menu_icon'				=> 'dashicons-calendar-alt',
+		'menu_icon'				=> $d4events_icon,
 	);
 	register_post_type( 'd4events', $args );
 
@@ -92,9 +96,9 @@ function d4_events_timezone_list($postid) {
 function add_d4events_meta_box() {
     add_meta_box(
         'd4events_meta_box', // $id
-        'Event Details', // $title 
+        'Meeting Event Details', // $title 
         'show_d4events_meta_box', // $callback
-        'events', // $post_type
+        'd4events', // $post_type
         'normal', // $context
         'high'); // $priority
 }
@@ -584,7 +588,7 @@ function d4events_draw_calendar($month,$year,$category,$exclude_category){
 
 	# get all events, place in array to send to get_events()
 	$events_args = array (
-		'post_type' => 'events',
+		'post_type' => 'd4events',
 		'category_name'	=> $category,
 		'category__not_in' => $exclude_category	
 	);
@@ -655,7 +659,7 @@ function d4events_draw_calendar($month,$year,$category,$exclude_category){
 	/* end the table */
 	$calendar.= '</table></div>';
 
-	/* Display No Events Notice */
+	/* Display No Meeting Events Notice */
 	if ($month_has_events == false) {
 		$calendar .= '<div class="no-events">There are no scheduled events for this month</div>';
 	}
@@ -748,7 +752,7 @@ function get_list_events($links,$files,$thumbnail_size) {
 
 	$event_content .= '<div class="events_list-single">';
 	$event_content .= $post_thumbnail;	
-	$event_content .= '<h5 class="cal-event-title">'.$link_open.get_the_title().$link_close.'<span class="events_list-datetime"><span class="events_list-date">'.date("m/d/Y", strtotime(get_post_meta( get_the_ID(), 'd4events_start_date', true ))).'</span></span></h5>';
+	$event_content .= '<h5 class="cal-event-title">'.$link_open.get_the_title().$link_close.'<span class="events_list-datetime"><span class="events_list-date">'.date("m/d/Y", strtotime(get_post_meta( get_the_ID(), 'd4events_start_date', true ))).'</span><span class="events_list-time">'.get_post_meta( get_the_ID(), 'd4events_start_time', true ).'</span></span></h5>';
 	$event_content .= '<p class="events_list-description">'.get_the_excerpt().'</p>';
 	$event_content .= $readmore;
 	$event_content .= $file_cluster;
@@ -804,7 +808,7 @@ function d4_ajax_cal_change() {
 function get_d4events_template($single_template) {
      global $post;
 
-     if ($post->post_type == 'events') {
+     if ($post->post_type == 'd4events') {
       	$single_template .= dirname( __FILE__ ) . '/single-event.php';
      }
      return $single_template;
