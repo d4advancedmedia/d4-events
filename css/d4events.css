@@ -7,9 +7,9 @@ table.calendar {
   overflow: hidden;
   width: 100%;
 }
-tr.calendar-row {  }
-td.calendar-day { min-height:80px; font-size:11px; position:relative; } * html div.calendar-day { height:80px; }
-td.calendar-day:hover { background:#eceff5; }
+tr.calendar-row	{  }
+td.calendar-day	{ min-height:80px; font-size:11px; position:relative; } * html div.calendar-day { height:80px; }
+td.calendar-day:hover	{ background:#eceff5; }
 div.day-number {
   background: #999 none repeat scroll 0 0;
   color: #fff;
@@ -69,12 +69,12 @@ td.calendar-day-head {
   background-color: #333333;
 }
 .cal-prev {
-  background-image: url('../img/button_prev.png');
-  float: left;
+	background-image: url('../img/button_prev.png');
+	float: left;
 }
 .cal-next {
-  background-image: url('../img/button_next.png');
-  float: right;
+	background-image: url('../img/button_next.png');
+	float: right;
 }
 #d4-cal-wrapper .search-form input {
   background: #fff none repeat scroll 0 0;
@@ -203,7 +203,7 @@ td.calendar-day-head {
   background: #fff none repeat scroll 0 0;
   border: 10px solid #fff;
   float: left;
-  margin: 0 20px 0 0;
+  margin: 0 20px 20px 0;
 }
 .events_list-single {
   background: #f9f9f9 none repeat scroll 0 0;
@@ -219,11 +219,12 @@ td.calendar-day-head {
   border-radius: 2px;
   color: #fff;
   display: block;
+  float: right;
   margin-bottom: 20px;
   margin-left: 4px;
-  max-width: 200px;
   padding: 5px;
   text-align: center;
+  width: 200px;
 }
 
 /* ---------- Files Feature ---------- */

@@ -696,9 +696,10 @@ function get_list_events($links,$files,$thumbnail_size) {
 	$post_thumbnail = '';
 	if (has_post_thumbnail()) {
 		$post_thumbnail = '<div class="events_list-thumb">'.$link_open.get_the_post_thumbnail(get_the_ID(),$thumbnail_size).$link_close.'</div>';
+		$has_image = ' event-has-image';
 	}
 
-	$event_content .= '<div class="events_list-single">';
+	$event_content .= '<div class="events_list-single'.$has_image.'">';
 	$event_content .= $post_thumbnail;	
 	$event_content .= '<h5 class="cal-event-title">'.$link_open.get_the_title().$link_close.'<span class="events_list-datetime"><span class="events_list-date">'.date("m/d/Y", strtotime(get_post_meta( get_the_ID(), 'd4events_start_date', true ))).'</span><span class="events_list-time">'.get_post_meta( get_the_ID(), 'd4events_start_time', true ).'</span></span></h5>';
 	$event_content .= '<div class="events_list-content"><p class="events_list-description">'.get_the_excerpt().'</p>';
