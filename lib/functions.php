@@ -10,7 +10,7 @@ function d4events_posttype() {
 	$labels = array(
 		'name'                  => _x( $d4events_posttype_plural, 'Post Type General Name', 'd4events' ),
 		'singular_name'         => _x( $d4events_posttype_singular, 'Post Type Singular Name', 'd4events' ),
-		'menu_name'             => __( 'Meetings', 'd4events' ),
+		'menu_name'             => __( $d4events_posttype_plural, 'd4events' ),
 		'name_admin_bar'        => __( $d4events_posttype_singular, 'd4events' ),
 		'archives'              => __( $d4events_posttype_singular.' Archives', 'd4events' ),
 		'parent_item_colon'     => __( 'Parent '.$d4events_posttype_singular.':', 'd4events' ),
