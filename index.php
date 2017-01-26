@@ -1,8 +1,8 @@
 <?php
 /*
 	Plugin Name: D4 Events
-	Plugin URI: https://github.com/d4advancedmedia/
-	GitHub Theme URI: https://github.com/d4advancedmedia/
+	Plugin URI: https://github.com/d4advancedmedia/Events
+	GitHub Plugin URI: https://github.com/d4advancedmedia/Events
 	GitHub Branch: master
 	Description: Simple events manager plugin
 	Version: 3.1.3
