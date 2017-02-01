@@ -19,6 +19,9 @@
 /*.post-type-d4events #the-list tr:nth-child(-n+7) {
   display: none;
 }*/
+#d4events_location {
+  background-image: none !important;
+}
 .singlepass {
   background: #f9f9f9 none repeat scroll 0 0;
   border: 1px solid #efefef;

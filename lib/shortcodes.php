@@ -66,13 +66,27 @@
 		elseif ($attr['style'] == 'list') {			
 			$events_args = array (
 				'post_type' => 'd4events',
-				'category_name'	=> $category,
-				'category__not_in' => $exclude_category,
+				//'category_name'	=> $category,
+				//'category__not_in' => $exclude_category,
 				//'post_status' => array( 'pending', 'future', 'publish')	,
 				'posts_per_page'	=> -1,				
 				'meta_key'			=> 'd4events_start_date',
 				'orderby'			=> 'meta_value',				
 				'order'				=> $order,
+				'tax_query'			=>  array(
+											'relation' => 'AND',
+											array(
+												'taxonomy' => 'd4events_category',
+												'field'    => 'name',
+												'terms'    => $category,
+											),
+											array(
+												'taxonomy' => 'd4events_category',
+												'field'    => 'term_id',
+												'terms'    => $exclude_category,
+												'operator' => 'NOT IN',
+											),
+										),
 			);
 			$events_query = new WP_Query($events_args);
 

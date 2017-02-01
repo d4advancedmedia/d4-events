@@ -39,7 +39,7 @@ function d4events_posttype() {
 		'description'           => __( 'd4events', 'd4events' ),
 		'labels'                => $labels,
 		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions','custom-fields' ),
-		'taxonomies'            => array( 'category', 'post_tag' ),
+		'taxonomies'            => array( 'category', 'post_tag', 'd4events_category', 'd4events_tag' ),
 		'hierarchical'          => false,
 		'public'                => true,
 		'show_ui'               => true,
@@ -58,6 +58,96 @@ function d4events_posttype() {
 
 }
 add_action( 'init', 'd4events_posttype', 0 );
+
+// Register Custom Taxonomy
+function d4events_categories() {
+
+	$labels = array(
+		'name'                       => _x( 'Event Categories', 'Taxonomy General Name', 'd4events_categories' ),
+		'singular_name'              => _x( 'Event Category', 'Taxonomy Singular Name', 'd4events_categories' ),
+		'menu_name'                  => __( 'Event Categories', 'd4events_categories' ),
+		'all_items'                  => __( 'All Event Categories', 'd4events_categories' ),
+		'parent_item'                => __( 'Parent Event Category', 'd4events_categories' ),
+		'parent_item_colon'          => __( 'Parent Event Category:', 'd4events_categories' ),
+		'new_item_name'              => __( 'Event Category Name', 'd4events_categories' ),
+		'add_new_item'               => __( 'Add New Event Category', 'd4events_categories' ),
+		'edit_item'                  => __( 'Edit Event Category', 'd4events_categories' ),
+		'update_item'                => __( 'Update Event Category', 'd4events_categories' ),
+		'view_item'                  => __( 'View Event Category', 'd4events_categories' ),
+		'separate_items_with_commas' => __( 'Separate items with commas', 'd4events_categories' ),
+		'add_or_remove_items'        => __( 'Add or Remove Event Categories', 'd4events_categories' ),
+		'choose_from_most_used'      => __( 'Choose from the most used', 'd4events_categories' ),
+		'popular_items'              => __( 'Popular Event Categories', 'd4events_categories' ),
+		'search_items'               => __( 'Search Event Categories', 'd4events_categories' ),
+		'not_found'                  => __( 'Not Found', 'd4events_categories' ),
+		'no_terms'                   => __( 'No items', 'd4events_categories' ),
+		'items_list'                 => __( 'Event Categories list', 'd4events_categories' ),
+		'items_list_navigation'      => __( 'Event Categories list navigation', 'd4events_categories' ),
+	);
+	$rewrite = array(
+		'slug'                       => 'events-categories',
+		'with_front'                 => true,
+		'hierarchical'               => false,
+	);
+	$args = array(
+		'labels'                     => $labels,
+		'hierarchical'               => true,
+		'public'                     => true,
+		'show_ui'                    => true,
+		'show_admin_column'          => true,
+		'show_in_nav_menus'          => true,
+		'show_tagcloud'              => true,
+		'rewrite'                    => $rewrite,
+	);
+	register_taxonomy( 'd4events_category', array( 'd4events' ), $args );
+
+}
+add_action( 'init', 'd4events_categories', 0 );
+
+// Register Custom Taxonomy
+function d4events_tags() {
+
+	$labels = array(
+		'name'                       => _x( 'Event Tags', 'Taxonomy General Name', 'd4events_tags' ),
+		'singular_name'              => _x( 'Event Tag', 'Taxonomy Singular Name', 'd4events_tags' ),
+		'menu_name'                  => __( 'Event Tags', 'd4events_tags' ),
+		'all_items'                  => __( 'All Event Tags', 'd4events_tags' ),
+		'parent_item'                => __( 'Parent Event Tag', 'd4events_tags' ),
+		'parent_item_colon'          => __( 'Parent Event Tag:', 'd4events_tags' ),
+		'new_item_name'              => __( 'Event Tag Name', 'd4events_tags' ),
+		'add_new_item'               => __( 'Add New Event Tag', 'd4events_tags' ),
+		'edit_item'                  => __( 'Edit Event Tag', 'd4events_tags' ),
+		'update_item'                => __( 'Update Event Tag', 'd4events_tags' ),
+		'view_item'                  => __( 'View Event Tag', 'd4events_tags' ),
+		'separate_items_with_commas' => __( 'Separate items with commas', 'd4events_tags' ),
+		'add_or_remove_items'        => __( 'Add or Remove Event Tags', 'd4events_tags' ),
+		'choose_from_most_used'      => __( 'Choose from the most used', 'd4events_tags' ),
+		'popular_items'              => __( 'Popular Event Tags', 'd4events_tags' ),
+		'search_items'               => __( 'Search Event Tags', 'd4events_tags' ),
+		'not_found'                  => __( 'Not Found', 'd4events_tags' ),
+		'no_terms'                   => __( 'No items', 'd4events_tags' ),
+		'items_list'                 => __( 'Event Tags list', 'd4events_tags' ),
+		'items_list_navigation'      => __( 'Event Tags list navigation', 'd4events_tags' ),
+	);
+	$rewrite = array(
+		'slug'                       => 'events-tags',
+		'with_front'                 => true,
+		'hierarchical'               => false,
+	);
+	$args = array(
+		'labels'                     => $labels,
+		'hierarchical'               => false,
+		'public'                     => true,
+		'show_ui'                    => true,
+		'show_admin_column'          => true,
+		'show_in_nav_menus'          => true,
+		'show_tagcloud'              => true,
+		'rewrite'                    => $rewrite,
+	);
+	register_taxonomy( 'd4events_tag', array( 'd4events' ), $args );
+
+}
+add_action( 'init', 'd4events_tags', 0 );
 
 /*------------------------------------------------------
 ----------------------Admin Elements--------------------
@@ -96,7 +186,7 @@ function d4_events_timezone_list($postid) {
 function add_d4events_meta_box() {
     add_meta_box(
         'd4events_meta_box', // $id
-        'Meeting Event Details', // $title 
+        'Event Details', // $title 
         'show_d4events_meta_box', // $callback
         'd4events', // $post_type
         'normal', // $context
@@ -137,7 +227,7 @@ $d4events_meta_fields = array(
         'desc'  => 'Start Time',
         'placeholder' => '00:00am or All Day',
         'id'    => $prefix.'start_time',
-        'type'  => 'text'
+        'type'  => 'time'
     ),
 	array(
 	    'label' => 'End Date',
@@ -150,7 +240,7 @@ $d4events_meta_fields = array(
         'desc'  => 'End Time',
         'placeholder' => '00:00am or All Day',
         'id'    => $prefix.'end_time',
-        'type'  => 'text'
+        'type'  => 'time'
     ),
     array(
         'label'=> 'Timezone',
@@ -269,8 +359,20 @@ echo '<input type="hidden" name="d4events_meta_box_nonce" value="'.wp_create_non
 							if ($meta == '') {
 								$meta = date("m/d/Y");
 							}
-							echo '<input type="text" class="datepicker" name="'.$field['id'].'" id="'.$field['id'].'" value="'.date("M d,Y", strtotime($meta)).'" size="30" />
+							echo '<input type="text" class="datepicker" name="'.$field['id'].'" id="'.$field['id'].'" value="'.date("M d, Y", strtotime($meta)).'" size="30" />
 									<br /><span class="description">'.$field['desc'].'</span>';
+						break;
+
+						// time
+						case 'time':
+							//if not "all day", format the time correctly
+							if (strtolower($meta) != 'all day') {
+								$meta = date("g:ia", strtotime($meta));
+							} else {
+								$meta = 'All Day';
+							}
+						    echo '<input type="text" placeholder="'.$field['placeholder'].'" name="'.$field['id'].'" id="'.$field['id'].'" value="'.$meta.'" size="30" />
+						        <br /><span class="description">'.$field['desc'].'</span>';
 						break;
 
 						// timezone
@@ -386,6 +488,7 @@ function save_d4events_meta($post_id) {
             return $post_id;
     }
     
+    //Validation Section//
     #$_POST('events_errors') = '';
 
     if ( ($_POST['d4events_start_date'] == '') && ($_POST['d4events_end_date'] == '')) {
@@ -410,8 +513,23 @@ function save_d4events_meta($post_id) {
 	if ( (strtotime($_POST['d4events_start_date'])) > (strtotime($_POST['d4events_end_date'])) ) {
 		$_POST['d4events_end_date'] = $_POST['d4events_start_date'];
 
-		#$_POST('events_errors') .= 'The End Date cannot be later than the Start Date.';
+		#$_POST('events_errors') .= 'The Start Date cannot be later than the End Date.';
 	}
+
+	if ( (strtolower($_POST['d4events_start_time']) != 'all day') && (strtolower($_POST['d4events_end_time']) != 'all day') ) {
+		$_POST['d4events_start_time'] = date("g:ia", strtotime($_POST['d4events_start_time']));
+		$_POST['d4events_end_time'] = date("g:ia", strtotime($_POST['d4events_end_time']));
+
+		if ( ($_POST['d4events_start_date'] == $_POST['d4events_end_date']) && (strtotime($_POST['d4events_start_time']) > strtotime($_POST['d4events_end_time'])) ) {
+
+			$_POST['d4events_end_time'] = date("g:ia", strtotime($_POST['d4events_start_time']));
+			#$_POST('events_errors') .= 'The Start Time cannot be later than the End Time.';
+		}
+	} else {
+		$_POST['d4events_start_time'] = 'all day';
+		$_POST['d4events_end_time'] = 'all day';
+	}
+	//End Validation Section//
 
     // loop through fields and save the data
     foreach ($d4events_meta_fields as $field) {
@@ -589,8 +707,22 @@ function d4events_draw_calendar($month,$year,$category,$exclude_category){
 	# get all events, place in array to send to get_events()
 	$events_args = array (
 		'post_type' => 'd4events',
-		'category_name'	=> $category,
-		'category__not_in' => $exclude_category	
+		//'category_name'	=> $category,
+		//'category__not_in' => $exclude_category,
+		'tax_query'			=>  array(
+									'relation' => 'AND',
+									array(
+										'taxonomy' => 'd4events_category',
+										'field'    => 'name',
+										'terms'    => $category,
+									),
+									array(
+										'taxonomy' => 'd4events_category',
+										'field'    => 'term_id',
+										'terms'    => $exclude_category,
+										'operator' => 'NOT IN',
+									),
+								),
 	);
 	$events_query = new WP_Query($events_args);
 
@@ -619,7 +751,7 @@ function d4events_draw_calendar($month,$year,$category,$exclude_category){
 			$fixed_month = $month;
 		}
 		$fulldate = $fixed_month.'/'.$fixed_day.'/'.$year;
-		$calendar .= $fulldate;
+		//$calendar .= $fulldate;
 		$day_events = get_events($fulldate,$category,$events_query);
 
 		if (!empty($day_events)) {
