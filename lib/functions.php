@@ -681,7 +681,7 @@ function get_events($event_date,$category,$events_query) {
 }
 
 /* draws a calendar */
-function d4events_draw_calendar($month,$year,$tax_query){
+function d4events_draw_calendar($month,$year,$category,$exclude_category){
 	if ($month == '') {
 		$month = date("n");
 	}
@@ -693,7 +693,7 @@ function d4events_draw_calendar($month,$year,$tax_query){
 	$monthName = $dateObj->format('F'); // March
 	
 	/* draw table */
-	$calendar = '<div data-month="'.$month.'" data-year="'.$year.'" data-category="'.$category.'" id="d4-event-calendar"><div class="cal-change-button cal-prev" data-change="cal-prev"></div><div class="cal-change-button cal-next" data-change="cal-next"></div><h2>'.$monthName.' '.$year.'</h2><table cellpadding="0" cellspacing="0" class="calendar">';
+	$calendar = '<div data-month="'.$month.'" data-year="'.$year.'" data-category="'.$category.'" data-exclude_category="'.$exclude_category.'" id="d4-event-calendar"><div class="cal-change-button cal-prev" data-change="cal-prev"></div><div class="cal-change-button cal-next" data-change="cal-next"></div><h2>'.$monthName.' '.$year.'</h2><table cellpadding="0" cellspacing="0" class="calendar">';
 
 	/* table headings */
 	$headings = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
@@ -707,6 +707,28 @@ function d4events_draw_calendar($month,$year,$tax_query){
 	$dates_array = array();
 
 	# get all events, place in array to send to get_events()
+
+	if ($category != '') {
+		$event_cats_array = array(
+								'taxonomy' => 'd4events_category',
+								'field'    => 'name',
+								'terms'    => $category,
+							);
+	}
+	if ($exclude_category != '') {
+		$event_exclude_cats_array = array(
+										'taxonomy' => 'd4events_category',
+										'field'    => 'term_id',
+										'terms'    => $exclude_category,
+										'operator' => 'NOT IN',
+									);
+	}
+	$tax_query = array(
+						'relation' => 'AND',
+						$event_cats_array,
+						$event_exclude_cats_array,
+	);
+
 	$events_args = array (
 		'post_type' => 'd4events',
 		//'category_name'	=> $category,
@@ -795,7 +817,7 @@ function d4events_draw_agenda($month,$year,$category,$exclude_category){
 	$year = date("Y");
 	for ($i = 1; $i <= 12; $i++) {
 		$month = date('n', mktime(0, 0, 0, $i, 1, $year));
-		$month_events .= d4events_draw_calendar($month,$year,$tax_query);
+		$month_events .= d4events_draw_calendar($month,$year,$category,$exclude_category);
 	}
 	return $month_events;
 }
@@ -912,6 +934,10 @@ function d4_ajax_cal_change() {
 	if(isset($_POST['category']))
 		{
 		    $category = $_POST['category'];
+		}
+	if(isset($_POST['exclude_category']))
+		{
+		    $exclude_category = $_POST['exclude_category'];
 		}	
 	if(isset($_POST['change']))
 		{
@@ -932,7 +958,7 @@ function d4_ajax_cal_change() {
 			$nextyear = $year-'1';
 	}
 	else $nextyear = $year;		
-    echo d4events_draw_calendar($nextmonth,$nextyear,$category);
+    echo d4events_draw_calendar($nextmonth,$nextyear,$category,$exclude_category);
     die();
 }
 

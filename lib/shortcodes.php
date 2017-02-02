@@ -29,7 +29,9 @@
 			$search .= '<input type="hidden" name="post_type" value="events" />';
 			$search .= '<label><span class="screenreader">Search for:</span><input class="search-field" type="search" placeholder="Search Events..." value="" name="s" title="Search for:" /></label><input class="search-submit" type="submit" value="Submit" /></form>';
 		}
-		if ($attr['category'] != '') {
+		
+		$category = $attr['category'];
+		if ($category != '') {
 			$category = $attr['category'];
 			$event_cats_array = array(
 									'taxonomy' => 'd4events_category',
@@ -37,8 +39,9 @@
 									'terms'    => $category,
 								);
 		}
-		if ($attr['exclude_category'] != '') {
-			$exclude_category = $attr['exclude_category'];
+
+		$exclude_category = $attr['exclude_category'];
+		if ($exclude_category != '') {			
 			$event_exclude_cats_array = array(
 											'taxonomy' => 'd4events_category',
 											'field'    => 'term_id',
@@ -77,7 +80,7 @@
 		$thumbnail_size = $attr['thumbnail_size'];
 		
 		if ($attr['style'] == 'agenda') {
-			$event_content = d4events_draw_agenda($month,$year,$tax_query);
+			$event_content = d4events_draw_agenda($month,$year,$category,$exclude_category);
 		}						
 		
 		elseif ($attr['style'] == 'list') {			
@@ -132,7 +135,7 @@
 			wp_reset_query();
 			
 		} else {
-			$event_content = d4events_draw_calendar($month,$year,$tax_query);
+			$event_content = d4events_draw_calendar($month,$year,$category,$exclude_category);
 		}
 
 		
