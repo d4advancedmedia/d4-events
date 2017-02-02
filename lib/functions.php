@@ -534,25 +534,14 @@ function save_d4events_meta($post_id) {
     // loop through fields and save the data
     foreach ($d4events_meta_fields as $field) {
         $old = get_post_meta($post_id, $field['id'], true);
-        $new = $_POST[$field['id']];
+        $new = $_POST[$field['id']];       
 
         if ($field['id'] == 'd4events_start_date') {
         	update_post_meta( $post_id, 'd4events_start_date', date("Y-m-d", strtotime($_POST['d4events_start_date'])) );
         }
         elseif ($field['id'] == 'd4events_end_date') {
         	update_post_meta( $post_id, 'd4events_end_date', date("Y-m-d", strtotime($_POST['d4events_end_date'])) );
-        }
-        elseif ($_POST[$field['id']] == 'day_of_the_week') {
-        	$repeat_interval = ceil(date('j', strtotime($_POST['d4events_start_date'])) / 7);
-        	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
-        	$month_weekday_repeat = date('l', strtotime($_POST['d4events_start_date']));
-        	update_post_meta($post_id, 'd4events_month_weekday_repeat', $month_weekday_repeat);
-        }
-        elseif ($_POST[$field['id']] == 'day_of_the_month') {
-        	$repeat_interval = date('j', strtotime($_POST['d4events_start_date']));
-        	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
-        	delete_post_meta($post_id, 'd4events_month_weekday_repeat');
-        }
+        }       
         elseif ($field['type'] == 'multipass') {
 
         	//clear out all existing metadata to ensure that keys increment by 1, starting with 1
@@ -570,11 +559,24 @@ function save_d4events_meta($post_id) {
 			    }
 			}
         }
-        elseif ($new && $new != $old) {
+
+        if ($_POST[$field['id']] == 'day_of_the_week') {
+        	$repeat_interval = ceil(date('j', strtotime($_POST['d4events_start_date'])) / 7);
+        	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
+        	$month_weekday_repeat = date('l', strtotime($_POST['d4events_start_date']));
+        	update_post_meta($post_id, 'd4events_month_weekday_repeat', $month_weekday_repeat);
+        }
+        if ($_POST[$field['id']] == 'day_of_the_month') {
+        	$repeat_interval = date('j', strtotime($_POST['d4events_start_date']));
+        	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
+        	delete_post_meta($post_id, 'd4events_month_weekday_repeat');
+        }
+        
+        if ($new && $new != $old) {
             update_post_meta($post_id, $field['id'], $new);
         } elseif ('' == $new && $old) {
             delete_post_meta($post_id, $field['id'], $old);
-        }
+        }       
     } // end foreach
 }
 add_action('save_post', 'save_d4events_meta');
@@ -679,7 +681,7 @@ function get_events($event_date,$category,$events_query) {
 }
 
 /* draws a calendar */
-function d4events_draw_calendar($month,$year,$category,$exclude_category){
+function d4events_draw_calendar($month,$year,$tax_query){
 	if ($month == '') {
 		$month = date("n");
 	}
@@ -709,20 +711,7 @@ function d4events_draw_calendar($month,$year,$category,$exclude_category){
 		'post_type' => 'd4events',
 		//'category_name'	=> $category,
 		//'category__not_in' => $exclude_category,
-		'tax_query'			=>  array(
-									'relation' => 'AND',
-									array(
-										'taxonomy' => 'd4events_category',
-										'field'    => 'name',
-										'terms'    => $category,
-									),
-									array(
-										'taxonomy' => 'd4events_category',
-										'field'    => 'term_id',
-										'terms'    => $exclude_category,
-										'operator' => 'NOT IN',
-									),
-								),
+		'tax_query'			=>  $tax_query,
 	);
 	$events_query = new WP_Query($events_args);
 
@@ -806,7 +795,7 @@ function d4events_draw_agenda($month,$year,$category,$exclude_category){
 	$year = date("Y");
 	for ($i = 1; $i <= 12; $i++) {
 		$month = date('n', mktime(0, 0, 0, $i, 1, $year));
-		$month_events .= d4events_draw_calendar($month,$year,$category,$exclude_category);
+		$month_events .= d4events_draw_calendar($month,$year,$tax_query);
 	}
 	return $month_events;
 }
@@ -844,38 +833,36 @@ function get_list_events($links,$files,$thumbnail_size) {
 
 function d4events_get_files($files) {
 
-	if (isset($files)) {
 
-		$file_array = array();
-		//determine number of multipass					
-		$multicount = multipass_counter();
-		
-		for ($k = 1 ; $k <= $multicount; $k++) {			
-			$meta = get_post_meta(get_the_ID(), 'd4events_file_'.$k, true);
-			if (isset($meta[1])) {				
-				$file_type = $meta[0];
-				if ($meta[2] != '') {
-					$file_name = $meta[2];
-				} else {
-					$file_name = end((explode('/', rtrim($meta[1], '/'))));
-				}
-				$file_class = 'fileclass_'.pathinfo($meta[1])['extension'];
-				$file_link = '<a href="'.$meta[1].'" class="events_files '.$file_class.'" target="_blank">'.$file_name.'</a>';
-				
-				$file_array[] = array(
-						'type' => $file_type,
-						'name' => $file_name,
-						'link' => $file_link,
-				);
+	$file_array = array();
+	//determine number of multipass					
+	$multicount = multipass_counter();
+	
+	for ($k = 1 ; $k <= $multicount; $k++) {			
+		$meta = get_post_meta(get_the_ID(), 'd4events_file_'.$k, true);
+		if ($meta[1] != '') {				
+			$file_type = $meta[0];
+			if ($meta[2] != '') {
+				$file_name = $meta[2];
+			} else {
+				$file_name = end((explode('/', rtrim($meta[1], '/'))));
 			}
+			$file_class = 'fileclass_'.pathinfo($meta[1])['extension'];
+			$file_link = '<a href="'.$meta[1].'" class="events_files '.$file_class.'" target="_blank">'.$file_name.'</a>';
 			
+			$file_array[] = array(
+					'type' => $file_type,
+					'name' => $file_name,
+					'link' => $file_link,
+			);
 		}
+		
 	}
 
 	//This is the array of file categories listed in the shortcode, so that the files can be sorted by category (ex: Agenda, Meeting, Minutes)
 	$shortcode_filecats = explode(',',$files);
 
-	if (isset($files) && ($files != '') && ($multicount != 0)) {
+	if ( isset($files) && ($files != '') && ($multicount != 0) && (!empty($file_array)) ) {
 
 		$file_cluster = '';
 		$filetype_title = '';

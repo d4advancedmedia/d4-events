@@ -77,7 +77,7 @@
 		$thumbnail_size = $attr['thumbnail_size'];
 		
 		if ($attr['style'] == 'agenda') {
-			$event_content = d4events_draw_agenda($month,$year,$category,$exclude_category);
+			$event_content = d4events_draw_agenda($month,$year,$tax_query);
 		}						
 		
 		elseif ($attr['style'] == 'list') {			
@@ -90,7 +90,7 @@
 				'meta_key'			=> 'd4events_start_date',
 				'orderby'			=> 'meta_value',				
 				'order'				=> $order,
-				'tax_query'			=> $tax_query,
+				'tax_query'			=>  $tax_query,
 			);
 			$events_query = new WP_Query($events_args);
 
@@ -132,7 +132,7 @@
 			wp_reset_query();
 			
 		} else {
-			$event_content = d4events_draw_calendar($month,$year,$category,$exclude_category);
+			$event_content = d4events_draw_calendar($month,$year,$tax_query);
 		}
 
 		

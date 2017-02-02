@@ -16,6 +16,14 @@ if ($('#d4events_repeating').is(':checked')) {
 	$(repeating_event_fields).slideDown();
 }
 
+if ($('#d4events_frequency').val() == "Weekly") {
+	$('.row-d4events_repeat_days').slideDown();
+	$('.row-d4events_monthly_repeat_by').slideUp().find('input').prop('checked', false);
+} else {
+	$('.row-d4events_repeat_days').slideUp().find('input').prop('checked', false);
+	$('.row-d4events_monthly_repeat_by').slideDown();
+}
+
 $('#d4events_repeating').change(function() {
 	if ($('#d4events_repeating').is(':checked')) {
 		$('.row-d4events_frequency').slideDown();
@@ -30,11 +38,12 @@ $('#d4events_repeating').change(function() {
 
 $('#d4events_frequency').change(function() {
 		var frequency_value = $('#d4events_frequency').val();
+
 		if (frequency_value == 'Weekly') {
 			$('.row-d4events_repeat_days').slideDown();
-			$('.row-d4events_monthly_repeat_by').slideUp();
+			$('.row-d4events_monthly_repeat_by').slideUp().find('input').prop('checked', false);
 		} else {
-			$('.row-d4events_repeat_days').slideUp();
+			$('.row-d4events_repeat_days').slideUp().find('input').prop('checked', false);
 			$('.row-d4events_monthly_repeat_by').slideDown();
 		}
 });
