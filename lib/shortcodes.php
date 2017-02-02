@@ -31,10 +31,27 @@
 		}
 		if ($attr['category'] != '') {
 			$category = $attr['category'];
+			$event_cats_array = array(
+									'taxonomy' => 'd4events_category',
+									'field'    => 'name',
+									'terms'    => $category,
+								);
 		}
 		if ($attr['exclude_category'] != '') {
 			$exclude_category = $attr['exclude_category'];
-		}		
+			$event_exclude_cats_array = array(
+											'taxonomy' => 'd4events_category',
+											'field'    => 'term_id',
+											'terms'    => $exclude_category,
+											'operator' => 'NOT IN',
+										);
+		}
+
+		$tax_query = array(
+						'relation' => 'AND',
+						$event_cats_array,
+						$event_exclude_cats_array,
+					);	
 
 		$event_style = ' events-style_'.$attr['style'];
 
@@ -61,7 +78,7 @@
 		
 		if ($attr['style'] == 'agenda') {
 			$event_content = d4events_draw_agenda($month,$year,$category,$exclude_category);
-		}							
+		}						
 		
 		elseif ($attr['style'] == 'list') {			
 			$events_args = array (
@@ -73,20 +90,7 @@
 				'meta_key'			=> 'd4events_start_date',
 				'orderby'			=> 'meta_value',				
 				'order'				=> $order,
-				'tax_query'			=>  array(
-											'relation' => 'AND',
-											array(
-												'taxonomy' => 'd4events_category',
-												'field'    => 'name',
-												'terms'    => $category,
-											),
-											array(
-												'taxonomy' => 'd4events_category',
-												'field'    => 'term_id',
-												'terms'    => $exclude_category,
-												'operator' => 'NOT IN',
-											),
-										),
+				'tax_query'			=> $tax_query,
 			);
 			$events_query = new WP_Query($events_args);
 
