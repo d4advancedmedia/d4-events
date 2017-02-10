@@ -9,17 +9,17 @@ var autocomplete = new google.maps.places.Autocomplete(input);
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
-var repeating_event_fields = $('.events-meta-row:nth-last-child(-n+3)');
+var repeating_event_fields = $('.row-d4events_frequency, .row-d4events_repeat_days, .row-d4events_monthly_repeat_by');
 $(repeating_event_fields).slideUp();
 
 if ($('#d4events_repeating').is(':checked')) {
 	$(repeating_event_fields).slideDown();
 }
 
-if ($('#d4events_frequency').val() == "Weekly") {
+if ( ($('#d4events_frequency').val() == "Weekly") && ($('#d4events_repeating').is(':checked')) ) {
 	$('.row-d4events_repeat_days').slideDown();
 	$('.row-d4events_monthly_repeat_by').slideUp().find('input').prop('checked', false);
-} else {
+} else if ($('#d4events_repeating').is(':checked')) {
 	$('.row-d4events_repeat_days').slideUp().find('input').prop('checked', false);
 	$('.row-d4events_monthly_repeat_by').slideDown();
 }

@@ -558,25 +558,26 @@ function save_d4events_meta($post_id) {
 		        	update_post_meta($post_id, 'd4events_file_'.$k, $_POST[$field['id'].$k]);
 			    }
 			}
-        }
+        } else {
 
-        if ($_POST[$field['id']] == 'day_of_the_week') {
-        	$repeat_interval = ceil(date('j', strtotime($_POST['d4events_start_date'])) / 7);
-        	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
-        	$month_weekday_repeat = date('l', strtotime($_POST['d4events_start_date']));
-        	update_post_meta($post_id, 'd4events_month_weekday_repeat', $month_weekday_repeat);
-        }
-        if ($_POST[$field['id']] == 'day_of_the_month') {
-        	$repeat_interval = date('j', strtotime($_POST['d4events_start_date']));
-        	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
-        	delete_post_meta($post_id, 'd4events_month_weekday_repeat');
-        }
-        
-        if ($new && $new != $old) {
-            update_post_meta($post_id, $field['id'], $new);
-        } elseif ('' == $new && $old) {
-            delete_post_meta($post_id, $field['id'], $old);
-        }       
+	        if ($_POST[$field['id']] == 'day_of_the_week') {
+	        	$repeat_interval = ceil(date('j', strtotime($_POST['d4events_start_date'])) / 7);
+	        	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
+	        	$month_weekday_repeat = date('l', strtotime($_POST['d4events_start_date']));
+	        	update_post_meta($post_id, 'd4events_month_weekday_repeat', $month_weekday_repeat);
+	        }
+	        if ($_POST[$field['id']] == 'day_of_the_month') {
+	        	$repeat_interval = date('j', strtotime($_POST['d4events_start_date']));
+	        	update_post_meta($post_id, 'd4events_repeat_interval', $repeat_interval);
+	        	delete_post_meta($post_id, 'd4events_month_weekday_repeat');
+	        }
+	        
+	        if ($new && $new != $old) {
+	            update_post_meta($post_id, $field['id'], $new);
+	        } elseif ('' == $new && $old) {
+	            delete_post_meta($post_id, $field['id'], $old);
+	        }
+	    }       
     } // end foreach
 }
 add_action('save_post', 'save_d4events_meta');

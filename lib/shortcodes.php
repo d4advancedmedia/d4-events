@@ -29,19 +29,18 @@
 			$search .= '<input type="hidden" name="post_type" value="events" />';
 			$search .= '<label><span class="screenreader">Search for:</span><input class="search-field" type="search" placeholder="Search Events..." value="" name="s" title="Search for:" /></label><input class="search-submit" type="submit" value="Submit" /></form>';
 		}
-		
-		$category = $attr['category'];
-		if ($category != '') {
-			$category = $attr['category'];
+				
+		if ($attr['category'] != '') {
+			$category = explode(',', $attr['category']);
 			$event_cats_array = array(
 									'taxonomy' => 'd4events_category',
 									'field'    => 'name',
 									'terms'    => $category,
 								);
 		}
-
-		$exclude_category = $attr['exclude_category'];
-		if ($exclude_category != '') {			
+		
+		if ($attr['exclude_category'] != '') {
+			$exclude_category = explode(',', $attr['exclude_category']);			
 			$event_exclude_cats_array = array(
 											'taxonomy' => 'd4events_category',
 											'field'    => 'term_id',
