@@ -854,7 +854,7 @@ function get_list_events($links,$files,$thumbnail_size,$content_length) {
 	$event_content .= '<div class="events_list-single'.$has_image.'">';
 	$event_content .= $post_thumbnail;	
 	$event_content .= '<h5 class="cal-event-title">'.$link_open.'<span>'.get_the_title().'</span>'.$link_close.'<span class="events_list-datetime"><span class="events_list-date">'.date("m/d/Y", strtotime(get_post_meta( get_the_ID(), 'd4events_start_date', true ))).'</span><span class="events_list-time">'.get_post_meta( get_the_ID(), 'd4events_start_time', true ).'</span></span></h5>';
-	$event_content .= '<div class="events_list-content"><p class="events_list-description">'.$post_content_modified.'</p>';
+	$event_content .= '<div class="events_list-content"><div class="events_list-description">'.$post_content_modified.'</div>';
 	$event_content .= $readmore.'<div class="clearfix"></div>';
 	$event_content .= $file_cluster;
 	$event_content .= '<div class="clearfix"></div></div></div>';
