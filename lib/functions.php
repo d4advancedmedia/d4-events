@@ -823,7 +823,7 @@ function d4events_draw_agenda($month,$year,$category,$exclude_category){
 	return $month_events;
 }
 
-function get_list_events($links,$files,$thumbnail_size) {
+function get_list_events($links,$files,$thumbnail_size,$content_length) {
 
 	$link_open = '';
 	$link_close = '';
@@ -843,10 +843,18 @@ function get_list_events($links,$files,$thumbnail_size) {
 		$has_image = ' event-has-image';
 	}
 
+	$content_length = intval($content_length);
+	$post_content = get_the_excerpt();
+	if (strlen($post_content) > $content_length) {
+		$post_content_modified = preg_replace('/\s+?(\S+)?$/', '', substr(wpautop(do_shortcode($post_content)), 0, $content_length)).' […]';
+	} else {
+		$post_content_modified = $post_content;
+	}
+
 	$event_content .= '<div class="events_list-single'.$has_image.'">';
 	$event_content .= $post_thumbnail;	
-	$event_content .= '<h5 class="cal-event-title">'.$link_open.get_the_title().$link_close.'<span class="events_list-datetime"><span class="events_list-date">'.date("m/d/Y", strtotime(get_post_meta( get_the_ID(), 'd4events_start_date', true ))).'</span><span class="events_list-time">'.get_post_meta( get_the_ID(), 'd4events_start_time', true ).'</span></span></h5>';
-	$event_content .= '<div class="events_list-content"><p class="events_list-description">'.get_the_excerpt().'</p>';
+	$event_content .= '<h5 class="cal-event-title">'.$link_open.'<span>'.get_the_title().'</span>'.$link_close.'<span class="events_list-datetime"><span class="events_list-date">'.date("m/d/Y", strtotime(get_post_meta( get_the_ID(), 'd4events_start_date', true ))).'</span><span class="events_list-time">'.get_post_meta( get_the_ID(), 'd4events_start_time', true ).'</span></span></h5>';
+	$event_content .= '<div class="events_list-content"><p class="events_list-description">'.$post_content_modified.'</p>';
 	$event_content .= $readmore.'<div class="clearfix"></div>';
 	$event_content .= $file_cluster;
 	$event_content .= '<div class="clearfix"></div></div></div>';

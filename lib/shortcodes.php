@@ -16,6 +16,7 @@
 			'number' => '',
 			'thumbnail_size' => 'thumbnail',
 			'order' => 'ASC',
+			'content_length' => '200',
 		), $atts);
 
 		$month = date("n");
@@ -28,6 +29,12 @@
 			$search .= '">';
 			$search .= '<input type="hidden" name="post_type" value="events" />';
 			$search .= '<label><span class="screenreader">Search for:</span><input class="search-field" type="search" placeholder="Search Events..." value="" name="s" title="Search for:" /></label><input class="search-submit" type="submit" value="Submit" /></form>';
+		}
+
+		if ($attr['content_length'] != 200) {
+			$content_length = intval($attr['content_length']);
+		} else {
+			$content_length = 200;
 		}
 				
 		if ($attr['category'] != '') {
@@ -110,7 +117,7 @@
 
 					if ($range == 'past') {
 						if ($end_date < strtotime('now')) {
-							$event_content .= get_list_events($attr['links'],$attr['files'],$thumbnail_size);
+							$event_content .= get_list_events($attr['links'],$attr['files'],$thumbnail_size,$content_length);
 							
 							//Only increment the post count when the post meets all of the criteria.
 							$i++;	
@@ -119,14 +126,14 @@
 
 					elseif ($range == 'future') {
 						if ($end_date >= strtotime('now')) {
-							$event_content .= get_list_events($attr['links'],$attr['files'],$thumbnail_size);
+							$event_content .= get_list_events($attr['links'],$attr['files'],$thumbnail_size,$content_length);
 							$i++;
 						}				
 					}
 
 					else {
 
-						$event_content .= get_list_events($attr['links'],$attr['files'],$thumbnail_size);	
+						$event_content .= get_list_events($attr['links'],$attr['files'],$thumbnail_size,$content_length);	
 					}
 				}			
 
