@@ -10,11 +10,14 @@
   float: none;
   padding-top: 20px;
 }
-.row-d4events_end_date, .row-d4events_end_time, .row-d4events_start_date, .row-d4events_start_time {
+.row-d4events_eventdate_ .multipass_colwrap {
   clear: none;
-  display: inline;
   float: left;
-  padding: 0;
+  padding: 0px 5px;
+  width: 25%;
+}
+.row-d4events_eventdate_ .singlepass {
+  max-width: 900px;
 }
 /*.post-type-d4events #the-list tr:nth-child(-n+7) {
   display: none;

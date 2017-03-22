@@ -1,5 +1,8 @@
+jQuery('body').on('focus',".datepicker_recurring_start", function(){
+    jQuery(this).datepicker({ dateFormat: 'yy-mm-dd'});
+});
+
 jQuery(document).ready(function($) {
-$(".datepicker").datepicker();
 
 function initialize() {
 
@@ -63,7 +66,12 @@ new_singlepass = jQuery('.singlepass:first-child').clone();
 		var increase_one = parseInt(total) + 1;
 		$(multipass_wrap).attr('total' , increase_one);
 
-		var newpass = $(new_singlepass).clone();
+		var newpass = $(lastpass).clone();
+
+		$(newpass).find('.d4events_start_date').attr('name','d4events_start_date_' + increase_one).attr('id','d4events_start_date_' + increase_one).removeClass('hasDatepicker');
+		$(newpass).find('.d4events_start_time').attr('name','d4events_start_time_' + increase_one).attr('id','d4events_start_time_' + increase_one);
+		$(newpass).find('.d4events_end_date').attr('name','d4events_end_date_' + increase_one).attr('id','d4events_end_date_' + increase_one).removeClass('hasDatepicker');
+		$(newpass).find('.d4events_end_time').attr('name','d4events_end_time_' + increase_one).attr('id','d4events_end_time_' + increase_one);
 
 		$(newpass).find('select').val( '' ).attr('id','type_d4events_file_' + increase_one).attr('name','d4events_file_' + increase_one + '[0]');
 		$(newpass).find('.event-filename').val( '' ).attr('id','name_d4events_file_' + increase_one).attr('name','d4events_file_' + increase_one + '[2]');
@@ -76,20 +84,29 @@ new_singlepass = jQuery('.singlepass:first-child').clone();
 
 	$(document).on('click', '.multi-delete', function(){ 
 		var multipass_wrap = $(this).parents('.multipass-wrap');
-		if ($('.singlepass').length == 1) {
-			$('.singlepass').find('select').val( '' );
-			$('.singlepass').find('input[type=text]').val( '' );
+		var multipass_sections = $(multipass_wrap).find('.singlepass');
+		if ($(multipass_sections).length == 1) {
+			$(multipass_sections).find('select').val( '' );
+			$(multipass_sections).find('input[type=text]').val( '' );
 		} else { 
 			$(this).parent().remove();
-			var total = 1;
-			$('.singlepass').each(function() {
+			var filetotal = 1;
+			$('.row-d4events_eventfile_ .singlepass').each(function() {
 				$(this).find('select').attr('id','type_d4events_file_' + total).attr('name','d4events_file_' + total + '[0]');
 				$(this).find('.event-filename').attr('id','name_d4events_file_' + total).attr('name','d4events_file_' + total + '[2]');
 				$(this).find('.event-fileurl').attr('id','d4events_file_' + total).attr('name','d4events_file_' + total + '[1]');
 				$(this).find('input[type=button]').attr('id','d4events_file_' + total + '_multipass_upload').attr('name','d4events_file_' + total + '_multipass_upload');
 				total++;
 			});
-			var newtotal = $('.singlepass').length;
+			var datetotal = 1;
+			$('.row-d4events_eventdate_ .singlepass').each(function() {
+				$(this).find('.d4events_start_date').attr('name','d4events_start_date_' + datetotal).attr('id','d4events_start_date_' + datetotal);
+				$(this).find('.d4events_start_time').attr('name','d4events_start_time_' + datetotal).attr('id','d4events_start_time_' + datetotal);
+				$(this).find('.d4events_end_date').attr('name','d4events_end_date_' + datetotal).attr('id','d4events_end_date_' + datetotal);
+				$(this).find('.d4events_end_time').attr('name','d4events_end_time_' + datetotal).attr('id','d4events_end_time_' + datetotal);
+				datetotal++;
+			});
+			var newtotal = $(multipass_wrap).find('.singlepass').length;
 			$(multipass_wrap).attr('total' , newtotal);
 		}
 	});

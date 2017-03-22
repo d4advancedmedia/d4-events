@@ -28,3 +28,11 @@ jQuery(document).ready(function($) {
                 s.src = ('https:' == window.location.protocol ? 'https' : 'http')+'://addtocalendar.com/atc/1.5/atc.min.js';
                 var h = d[g]('body')[0];h.appendChild(s); }})();
 });
+
+jQuery('body').on('focus',".datepicker_recurring_start", function(){
+    jQuery(this).datepicker();
+});
+
+jQuery('#cmd').click(function(){
+    jQuery('#testcontent').append('<br>a datepicker <input class="datepicker_recurring_start"/>');
+});

@@ -39,7 +39,8 @@ function register_d4events_elements() {
 	wp_register_style( 'add-to-calendar', plugins_url( 'css/atc-style-blue.css' , __FILE__ ) );
 	wp_enqueue_style( 'add-to-calendar' );
 	wp_register_script( 'd4events', plugins_url( 'js/d4events.js' , __FILE__ ), array( 'jquery' ), $d4events_version, true );
-	wp_enqueue_script('d4events');	
+	wp_enqueue_script('d4events');
+	wp_enqueue_script('jquery-ui-datepicker');	
 }
 
 include ('config.php');
