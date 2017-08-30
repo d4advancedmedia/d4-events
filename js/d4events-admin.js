@@ -1,5 +1,8 @@
+jQuery('body').on('focus',".datepicker_recurring_start", function(){
+    jQuery(this).datepicker({ dateFormat: 'mm/dd/yy'});
+});
+
 jQuery(document).ready(function($) {
-$(".datepicker").datepicker();
 
 function initialize() {
 
@@ -9,19 +12,19 @@ var autocomplete = new google.maps.places.Autocomplete(input);
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
-var repeating_event_fields = $('.row-d4events_frequency, .row-d4events_repeat_days, .row-d4events_monthly_repeat_by');
-$(repeating_event_fields).slideUp();
+var repeating_event_fields = $('.row-d4events_frequency, .row-d4events_repeat_days, .row-d4events_monthly_repeat_by, .row-d4events_repeat_end_date, .row-d4events_blackout_dates');
+$(repeating_event_fields).slideUp(0);
 
 if ($('#d4events_repeating').is(':checked')) {
-	$(repeating_event_fields).slideDown();
+	$(repeating_event_fields).slideDown(0);
 }
 
 if ( ($('#d4events_frequency').val() == "Weekly") && ($('#d4events_repeating').is(':checked')) ) {
-	$('.row-d4events_repeat_days').slideDown();
-	$('.row-d4events_monthly_repeat_by').slideUp().find('input').prop('checked', false);
+	$('.row-d4events_repeat_days').slideDown(0);
+	$('.row-d4events_monthly_repeat_by').slideUp(0).find('input').prop('checked', false);
 } else if ($('#d4events_repeating').is(':checked')) {
-	$('.row-d4events_repeat_days').slideUp().find('input').prop('checked', false);
-	$('.row-d4events_monthly_repeat_by').slideDown();
+	$('.row-d4events_repeat_days').slideUp(0).find('input').prop('checked', false);
+	$('.row-d4events_monthly_repeat_by, .row-d4events_repeat_end_date, .row-d4events_blackout_dates').slideDown(0);
 }
 
 $('#d4events_repeating').change(function() {
@@ -50,6 +53,14 @@ $('#d4events_frequency').change(function() {
 
 
 });
+
+datefield = jQuery('#blackout_dates input:last-of-type').clone().attr('id','');
+(function($) {
+	$('.multi-date-add').click(function() {
+		var newfield = $(datefield).clone();
+		$('#blackout_dates input:last-of-type').after(newfield);
+	});
+})( jQuery );
 
 new_singlepass = jQuery('.singlepass:first-child').clone();
 

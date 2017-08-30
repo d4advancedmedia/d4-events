@@ -18,15 +18,29 @@ $d4events_posttype_plural = "Events";
 $d4events_icon = 'dashicons-calendar-alt';
 
 
-/* --- Set the theme wrapper --- */
-function d4_events_wrapper_start() {
+/*Default theme wrapper, matches Skivvy. Replace with your own using the following in your theme functions file:
 
-echo '<section id="content">';
-get_template_part( 'inc/chunk' , 'title' );
+remove_action('d4events_theme_wrapper_start', 'd4events_standard_theme_wrapper_start', 10);
+remove_action('d4events_theme_wrapper_end', 'd4events_standard_theme_wrapper_end', 10);
 
-  echo '<div class="page-wrapper"><main id="main-content" class="clearfix" role="main">';
+add_action('d4events_theme_wrapper_start', 'my_theme_wrapper_start', 10);
+add_action('d4events_theme_wrapper_end', 'my_theme_wrapper_end', 10);
+
+function my_theme_wrapper_start() {
+  echo '<section id="main">';
 }
 
-function d4_events_wrapper_end() {
-  echo '</main></div></section>';
+function my_theme_wrapper_end() {
+  echo '</section>';
+}
+
+*/
+
+function d4events_standard_theme_wrapper_start($wrapper_start) {
+	get_template_part( 'inc/chunk' , 'title' );
+  	echo '<section id="content"><div class="page-wrapper"><main id="main-content" class="clearfix" role="main">';
+}
+
+function d4events_standard_theme_wrapper_end($wrapper_end) {
+	echo '</div></div></section>';
 }
