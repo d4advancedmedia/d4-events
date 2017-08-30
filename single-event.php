@@ -1,6 +1,4 @@
 <?php
-get_header();
-
 //Create Variables
 
 $datetime_array = d4events_fetch_datetime($post->ID);
@@ -32,9 +30,10 @@ if (strtotime($end_time) == strtotime('xyz')) {
 $act_date_start = date('Y-m-d H:i:s', (strtotime($start_date.$start_time_adjusted)));
 $act_date_end = date('Y-m-d H:i:s', (strtotime($end_date.$end_time_adjusted)));
 
-d4events_theme_wrapper_start();
+get_header();
+d4events_before_main_content();
 
-	echo '<div id="single-event-wrapper">';	
+	echo '<div id="single-event-wrapper">TEST';	
 
 		//Output the event content
 		echo '<div class="one_half single-event-left"><div class="skivdiv-content">'.
@@ -92,6 +91,6 @@ d4events_theme_wrapper_start();
 
 	echo '</div>';
 
-d4events_theme_wrapper_end();
+d4events_after_main_content();
 get_footer();
 ?>

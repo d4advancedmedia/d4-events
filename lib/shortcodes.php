@@ -1,22 +1,22 @@
 <?php
 
-// Use: [events year="" month="" category=""]
-	function shortcode_events( $atts ) {
+// Use: [d4events year="" month="" category=""]
+	function shortcode_d4events( $atts ) {
 		$attr=shortcode_atts(array(
-			'year' => '',
-			'month'=>'',
-			'search' => '',
-			'category' => '',
-			'exclude_category' => '',
-			'agenda' => '',
-			'style' => 'calendar',
-			'links' => 'true',
-			'files' => '',
-			'range' => 'all',
-			'number' => '',
-			'thumbnail_size' => 'thumbnail',
-			'order' => 'ASC',
-			'content_length' => '200',
+			'year' 				=> 	'',
+			'month'				=>	'',
+			'search' 			=> 	'',
+			'category' 			=> 	'',
+			'exclude_category' 	=> 	'',
+			'agenda' 			=> 	'',
+			'style' 			=> 	'calendar',
+			'links' 			=> 	'true',
+			'files' 			=> 	'',
+			'range' 			=> 	'all',
+			'number' 			=> 	'',
+			'thumbnail_size' 	=> 	'thumbnail',
+			'order' 			=> 	'ASC',
+			'content_length' 	=> 	'200'
 		), $atts);
 
 		$month = date("n");
@@ -24,11 +24,12 @@
 			$year = date("Y");
 		}
 		if ($attr['search'] != '') {
-			$search = '<form class="search-form" role="search" method="get"action="';
-			$search .= home_url( '/' );
-			$search .= '">';
-			$search .= '<input type="hidden" name="post_type" value="events" />';
-			$search .= '<label><span class="screenreader">Search for:</span><input class="search-field" type="search" placeholder="Search Events..." value="" name="s" title="Search for:" /></label><input class="search-submit" type="submit" value="Submit" /></form>';
+			$search = '<form class="search-form" role="search" method="get"action="'.home_url( '/' ).'">
+					<input type="hidden" name="post_type" value="events" />
+					<label><span class="screenreader">Search for:</span></label>
+					<input class="search-field" type="search" placeholder="Search Events..." value="" name="s" title="Search for:" />
+					<input class="search-submit" type="submit" value="Submit" />
+				</form>';
 		}
 
 		if ($attr['content_length'] != 200) {
@@ -66,11 +67,9 @@
 
 		if ($attr['agenda'] != '') {
 			$event_style .= ' agenda-view';
-		}
-		
-		if ($attr['files'] != '') {
-			$files = explode(',' , $attr['files']);
-		}
+		}	
+
+		$files = $attr['files'];
 
 		$range = $attr['range'];
 
@@ -86,73 +85,38 @@
 		$thumbnail_size = $attr['thumbnail_size'];
 		
 		if ($attr['style'] == 'agenda') {
-			$event_content = d4events_draw_agenda($month,$year,$category,$exclude_category);
+
+			$event_content = '<div class="d4-cal-inner">';
+			$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$attr['style'],'future',$files,$last_event_id,$content_length);			
+			$event_content .= '</div>';
+			$event_content .= '<a class="d4events-loadmore">Load More</a>';	
 		}						
 		
-		elseif ($attr['style'] == 'list') {			
-			$events_args = array (
-				'post_type' => 'd4events',
-				//'category_name'	=> $category,
-				//'category__not_in' => $exclude_category,
-				//'post_status' => array( 'pending', 'future', 'publish')	,
-				'posts_per_page'	=> -1,				
-				'meta_key'			=> 'd4events_start_date',
-				'orderby'			=> 'meta_value',				
-				'order'				=> $order,
-				'tax_query'			=>  $tax_query,
-			);
-			$events_query = new WP_Query($events_args);
+		elseif ($attr['style'] == 'list') {
 
-			$i=1;
-
-			while ( $events_query->have_posts() ) { $events_query->the_post();	
-
-				if ($i <= $number) {					
-
-					$end_date = strtotime(get_post_meta( get_the_ID(), 'd4events_end_date', true ));
-
-					if ($end_date == '') {
-						$end_date = strtotime(get_post_meta( get_the_ID(), 'd4events_start_date', true ));
-					}
-
-					if ($range == 'past') {
-						if ($end_date < strtotime('now')) {
-							$event_content .= get_list_events($attr['links'],$attr['files'],$thumbnail_size,$content_length);
-							
-							//Only increment the post count when the post meets all of the criteria.
-							$i++;	
-						}						
-					} 
-
-					elseif ($range == 'future') {
-						if ($end_date >= strtotime('now')) {
-							$event_content .= get_list_events($attr['links'],$attr['files'],$thumbnail_size,$content_length);
-							$i++;
-						}				
-					}
-
-					else {
-
-						$event_content .= get_list_events($attr['links'],$attr['files'],$thumbnail_size,$content_length);	
-					}
-				}			
-
-			}
-			wp_reset_query();
+			$event_content = '<div class="d4-cal-inner">';
+			$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$attr['style'],$range,$files,$last_event_id,$content_length);			
+			$event_content .= '</div>';
+			if ($range != 'all') {	
+				$event_content .= '<a class="d4events-loadmore">Load More</a>';	
+			}	
 			
 		} else {
-			$event_content = d4events_draw_calendar($month,$year,$category,$exclude_category);
+			$range = 'all';
+			$style = 'calendar';
+			$event_content = '<div class="d4-cal-inner">';
+			$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$style,$range,$files,$last_event_id,$content_length);
+			$event_content .= '</div>';
 		}
 
 		
 		$buttons = '<div class="cal-change-button cal-prev" data-change="cal-prev">Previous</div><div class="cal-change-button cal-next" data-change="cal-next">Next</div>';
 
 		$output = '';
-		$output .= '<div id="d4-cal-wrapper" class="'.$event_style.'">';
+		$output .= '<div class="d4-cal-wrapper '.$event_style.'">';
 		$output .= $search;
-		$output .= '<div id="d4-cal-inner">';
 		$output .= $event_content;
-		$output .= '</div></div>';	
+		$output .= '</div>';	
 
 		return $output;
-	} add_shortcode( 'events', 'shortcode_events' );
+	} add_shortcode( 'd4events', 'shortcode_d4events' );
