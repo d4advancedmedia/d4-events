@@ -34,6 +34,12 @@ function d4events_posttype() {
 		'items_list_navigation' => __( 'Items list navigation', 'd4events' ),
 		'filter_items_list'     => __( 'Filter items list', 'd4events' ),
 	);
+	$rewrite = array(
+		'slug'                  => 'events',
+		'with_front'            => true,
+		'pages'                 => true,
+		'feeds'                 => true,
+	);
 	$args = array(
 		'label'                 => __( $d4events_posttype_singular, 'd4events' ),
 		'description'           => __( 'd4events', 'd4events' ),
@@ -53,6 +59,7 @@ function d4events_posttype() {
 		'publicly_queryable'    => true,
 		'capability_type'       => 'page',
 		'menu_icon'				=> $d4events_icon,
+		'rewrite'				=> $rewrite,
 	);
 	register_post_type( 'd4events', $args );
 

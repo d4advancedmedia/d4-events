@@ -5,12 +5,12 @@
 	GitHub Plugin URI: https://github.com/d4advancedmedia/Events
 	GitHub Branch: master
 	Description: Simple events manager plugin
-	Version: 3.2.0
+	Version: 3.2.1
 	Author: D4 Adv. Media
 	License: GPL2
 */
 
-$d4events_version = '3.2.0';
+$d4events_version = '3.2.1';
 
 //Register admin style sheets and scripts
 add_action('admin_enqueue_scripts', 'd4events_admin_elements');
@@ -108,13 +108,13 @@ function d4events_install() {
 
 	#echo $d4events_version;
 
-	$d4events_version = '3.2.0';
+	$d4events_version = '3.2.1';
 
     update_option( "d4events_db_version", $d4events_version );
 }
 
 function d4events_update_db_check() {
-    $d4events_version = '3.2.0';
+    $d4events_version = '3.2.1';
     #require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     #update_option( "d4events_db_version", $d4events_version );
  
