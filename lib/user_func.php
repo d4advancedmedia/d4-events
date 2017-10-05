@@ -331,7 +331,7 @@ function d4events_process_events($event_date,$category,$events_query,$style,$ran
 function d4events_draw_calendar($month,$year,$category,$exclude_category,$style,$range,$files){
 	
 	if ( ($style == 'list') || ($style == 'agenda') ) {
-		$repeat = 99;
+		$repeat = 12;
 	} else {
 		$repeat = 1;
 	}
@@ -363,7 +363,8 @@ function d4events_draw_calendar($month,$year,$category,$exclude_category,$style,
 
 	$agenda = '<table cellpadding="0" cellspacing="0" class="calendar">';
 
-	//Repeat the calendar function: up to 99 times for an agenda/list or until 10 dates are returned including repeats, or once for a calendar to show a single month
+	//Repeat the calendar function: up to 12 times for an agenda/list or until 15 dates are returned including repeats, or once for a calendar to show a single month. This makes the tool very resource intensive and will be replaced with a more efficient funciton in a later release.
+	
 	for($c = 0; $c < $repeat; $c++):
 
 		//this variable only increments when a date is matched, capping the total number of returned events in the case of an agenda/list (needed for repeats)

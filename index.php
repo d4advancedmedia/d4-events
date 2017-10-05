@@ -10,7 +10,7 @@
 	License: GPL2
 */
 
-$d4events_version = '3.2.1';
+$d4events_version = '3.2.2';
 
 //Register admin style sheets and scripts
 add_action('admin_enqueue_scripts', 'd4events_admin_elements');
