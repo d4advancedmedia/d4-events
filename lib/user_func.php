@@ -152,7 +152,7 @@ function d4events_get_files($files) {
 			} else {
 				$file_name = end((explode('/', rtrim($meta[1], '/'))));
 			}
-			$file_class = 'fileclass_'.pathinfo($meta[1])['extension'];
+			$file_class = 'fileclass_'.$meta[1]['extension'];
 			$file_link = '<a href="'.$meta[1].'" class="events_files '.$file_class.'" target="_blank">'.$file_name.'</a>';
 			
 			$file_array[] = array(
