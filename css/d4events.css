@@ -6,7 +6,7 @@ table.calendar {
   border-radius: 10px;
   overflow-x: scroll;
   width: 100%;
-  min-width: 400px;
+  min-width: 330px;
 }
 tr.calendar-row	{  }
 td.calendar-day	{ min-height:80px; font-size:11px; position:relative; } * html div.calendar-day { height:80px; }
@@ -43,7 +43,7 @@ td.calendar-day, td.calendar-day-np {
   margin: 30px auto;
   max-width: 100%;
   overflow-y: hidden;
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 td.calendar-day-head {
   background: transparent none repeat scroll 0 0;
@@ -227,7 +227,7 @@ td.calendar-day-head {
 }
 .d4-cal-wrapper a.events_list-readmore {
   background: #279ad1 none repeat scroll 0 0;
-  border-radius: 2px;
+  border-radius: 5px;
   color: #fff;
   display: block;
   float: right;
@@ -237,7 +237,17 @@ td.calendar-day-head {
   text-align: center;
   width: 200px;
 }
-
+.d4-cal-wrapper.no-event-links a.events_list-readmore {
+    display: none;
+}
+.no-event-links .cal-event-title a {
+  pointer-events: none;
+}
+a.d4events-loadmore.no-loadmore {
+    background: #9f9f9f;
+    cursor:auto;
+    pointer-events:none;
+}
 /* ---------- Files Feature ---------- */
 .d4-cal-wrapper a.events_files {
   background: #1a78b2 none repeat scroll 0 0;
@@ -251,7 +261,7 @@ td.calendar-day-head {
   padding: 3px 9px;
 }
 /*.events_files.fileclass_pdf::before {
-  content: "ï‡";
+  content: "Ã¯â€¡Â";
   font-family: "icomoon";
   font-size: 20px;
   margin-right: 5px;
@@ -354,11 +364,12 @@ p.events_list-description:empty {
 }
 a.d4events-loadmore {
     cursor: pointer;
-    display: block;
+    display: none;
     text-align: center;
     padding: 5px;
-    background: #333;
+    background: #208a72;
     color: #fff;
+    border-radius: 5px;
 }
 
 .events-style_agenda table.calendar {
@@ -367,8 +378,14 @@ a.d4events-loadmore {
 a.d4events-loadmore:hover {
     color: #fff;
 }
+.show-loadmore a.d4events-loadmore {
+  display:block;
+}
 .d4-cal-inner {
-    overflow-x: scroll;
+    overflow-x: auto;
+}
+.d4-cal-wrapper .agenda-time-column {
+    width: 25%;
 }
 /* ---------- Mobile ---------- */
 @media all and (max-width: 675px)  {
@@ -401,5 +418,9 @@ td.calendar-day.has-events {
 .d4-cal-wrapper {
   min-width:none;
   font-size:0.8em;
+}
+.d4-cal-wrapper.events-style_agenda td {
+    padding: 10px 5px;
+    line-height: 15px;
 }
 }

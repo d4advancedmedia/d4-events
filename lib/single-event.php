@@ -29,8 +29,16 @@ if (strtotime($start_time) == strtotime('xyz')) {
 if (strtotime($end_time) == strtotime('xyz')) {
 	$end_time_adjusted = '11:59pm';
 } else {$end_time_adjusted = $end_time;}
-$act_date_start = date('Y-m-d H:i:s', (strtotime($start_date.$start_time_adjusted)));
-$act_date_end = date('Y-m-d H:i:s', (strtotime($end_date.$end_time_adjusted)));
+$act_date_start = date('m/d/Y H:i:s', (strtotime($start_date.$start_time_adjusted)));
+$act_date_end = date('m/d/Y H:i:s', (strtotime($end_date.$end_time_adjusted)));
+
+if($location == '') {
+	$atc_location = 'Reno, NV';
+} else {
+	$atc_location = $location;
+}
+
+$timezone = 'America/Los_Angeles';
 
 d4events_theme_wrapper_start();
 
@@ -51,7 +59,7 @@ d4events_theme_wrapper_start();
 		            '<var class="atc_timezone">'.$timezone.'</var>'.
 		            '<var class="atc_title">'.$title.'</var>'.
 		            '<var class="atc_description">'.$description.'</var>'.
-		            '<var class="atc_location">'.$location.'</var>'.
+		            '<var class="atc_location">'.$atc_location.'</var>'.
 		            #'<var class="atc_organizer">Luke Skywalker</var>'.
 		            #'<var class="atc_organizer_email">luke@starwars.com</var>'.
 	        	'</var>'.
@@ -82,11 +90,16 @@ d4events_theme_wrapper_start();
 				echo '<a class="button registration-link" href="'.$registration_link.'" target="_blank">Register Here</a>';
 			}
 
-			$files = d4events_get_files('agenda,minutes,image,other');
-			if ($files != '') {
-				echo '<h3>Files</h3>'.
-				$files;
-			}
+			if( get_post_meta( get_the_ID(), 'd4events_files', true ) != '') {
+				$file_array = 'agenda,minutes,image,other';
+				$files = d4events_get_files($file_array);
+				$file_output = d4events_output_files($files,$file_array);
+				if (is_array($files)) {
+					echo '<h3>Files</h3>'.
+					$file_output;
+				}
+			} 
+			
 			
 			echo '</div></div>';
 

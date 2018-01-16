@@ -1,28 +1,11 @@
-jQuery(document).ready(function($) {
-	$(document).on('click', '.cal-change-button', function() {
-		var month = $('.d4-event-calendar').attr('data-month');
-		var year = $('.d4-event-calendar').attr('data-year');
-		var category = $('.d4-event-calendar').attr('data-category');
-		var exclude_category = $('.d4-event-calendar').attr('data-exclude_category');
-		var change = $(this).attr('data-change');
-		$.post(
-		    ajax_object.ajaxurl, 
-		    {
-		        'action': 'cal_change',
-		        'month':   month,
-		        'year': year,
-		        'category': category,
-		        'exclude_category': exclude_category,
-		        'change': change,
-		    }, 
-		    function(response){
-		    	$('.d4-cal-inner').html(response);
-		    }
-		);
-	});
+(function($) {
 
-	$(document).on('click', '.d4events-loadmore', function() {
-		var calwrapper = $(this).parents('.d4-cal-wrapper');
+	function d4events_loadmore(element,testing) {
+		
+		var calwrapper = $(element).parents('.d4-cal-wrapper');
+
+		$(element).html('Loading...');
+		$(calwrapper).addClass('d4events-loadingmore');
 
 		if ($(calwrapper).hasClass('events-style_agenda')) {
 			var lastevent = $(calwrapper).find('.agenda-day-row:last-of-type');
@@ -34,20 +17,73 @@ jQuery(document).ready(function($) {
 		
 		var lastdate = $(lastevent).attr('data-event_date');
 		var last_event_id = $(lastevent).attr('data-event_id');
-		var category = $('.d4-event-calendar').attr('data-category');
-		var exclude_category = $('.d4-event-calendar').attr('data-exclude_category');
+		var terms = $('.d4-event-calendar').attr('data-terms');
+		var taxonomy = $('.d4-event-calendar').attr('data-taxonomy');
+		var tax_field = $('.d4-event-calendar').attr('data-tax_field');
+		var exclude_terms = $('.d4-event-calendar').attr('data-exclude_terms');
 
 		$.post(
 		    ajax_object.ajaxurl, 
 		    {
 		        'action': 'loadmore',
-		        'lastdate':   lastdate,
-		        'category': category,
-		        'exclude_category': exclude_category,
+		        'lastdate': lastdate,
+		        'terms': terms,
+		        'taxonomy': taxonomy,
+		        'tax_field': tax_field,
+		        'exclude_terms': exclude_terms,
 		        'style': style,
 		    }, 
 		    function(response){
-		    	$('.d4-cal-inner').append(response);
+		    	$(calwrapper).removeClass('d4events-loadingmore');
+		    	$(element).html('Load More Events');
+		    	if(!testing) {
+		    		$(calwrapper).find('.d4-cal-inner').append(response);
+		    	}
+		    	console.log(response);		    	
+		    	if(response != '') {
+		    		$(calwrapper).addClass('show-loadmore');
+		    	} else {
+		    		$(element).addClass('no-loadmore').html('No more events to load');
+		    	}
+		    }
+		);
+	}
+
+	$(document).on('click', '.d4events-loadmore', function() {
+		d4events_loadmore($(this),false);
+	});
+
+	$(document).ready(function() {
+		$('.d4events-loadmore').each(function() {
+			d4events_loadmore($(this),true);
+		});
+	});
+
+})( jQuery );
+
+jQuery(document).ready(function($) {
+	$(document).on('click', '.cal-change-button', function() {
+		var month = $('.d4-event-calendar').attr('data-month');
+		var year = $('.d4-event-calendar').attr('data-year');
+		var terms = $('.d4-event-calendar').attr('data-terms');
+		var taxonomy = $('.d4-event-calendar').attr('data-taxonomy');
+		var tax_field = $('.d4-event-calendar').attr('data-tax_field');
+		var exclude_terms = $('.d4-event-calendar').attr('data-exclude_terms');
+		var change = $(this).attr('data-change');
+		$.post(
+		    ajax_object.ajaxurl, 
+		    {
+		        'action': 'cal_change',
+		        'month':   month,
+		        'year': year,
+		        'terms': terms,
+		        'taxonomy': taxonomy,
+		        'tax_field': tax_field,
+		        'exclude_terms': exclude_terms,
+		        'change': change,
+		    }, 
+		    function(response){
+		    	$('.d4-cal-inner').html(response);
 		    }
 		);
 	});

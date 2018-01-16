@@ -45,7 +45,7 @@ function d4events_posttype() {
 		'description'           => __( 'd4events', 'd4events' ),
 		'labels'                => $labels,
 		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions','custom-fields' ),
-		'taxonomies'            => array( 'category', 'post_tag', 'd4events_category', 'd4events_tag' ),
+		'taxonomies'            => array( 'd4events_category', 'd4events_tag' ),
 		'hierarchical'          => false,
 		'public'                => true,
 		'show_ui'               => true,
@@ -235,9 +235,22 @@ add_filter( 'manage_edit-d4events_sortable_columns', 'd4events_sortable_columns'
 
 function d4events_sortable_columns( $columns ) {
 
-	$columns['event_date'] = 'date';
+	$columns['event_date'] = 'event_date';
 
 	return $columns;
+}
+
+add_action( 'pre_get_posts', 'd4events_custom_orderby' );
+function d4events_custom_orderby( $query ) {
+    if( ! is_admin() )
+        return;
+ 
+    $orderby = $query->get( 'orderby');
+ 
+    if( 'event_date' == $orderby ) {
+        $query->set('meta_key','d4events_start');
+        $query->set('orderby','meta_value_num');
+    }
 }
 
 function d4events_timezone_list($postid) {

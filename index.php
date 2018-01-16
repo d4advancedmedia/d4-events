@@ -5,12 +5,12 @@
 	GitHub Plugin URI: https://github.com/d4advancedmedia/Events
 	GitHub Branch: master
 	Description: Simple events manager plugin
-	Version: 3.2.3
+	Version: 3.4.0
 	Author: D4 Adv. Media
 	License: GPL2
 */
 
-$d4events_version = '3.2.3';
+$d4events_version = '3.4.0';
 
 //Register admin style sheets and scripts
 add_action('admin_enqueue_scripts', 'd4events_admin_elements');
@@ -84,6 +84,18 @@ function d4events_install() {
 		$old_end_date = get_post_meta($postID,'d4events_end_date',true);
 		$old_end_time = get_post_meta($postID,'d4events_end_time',true);
 
+		if ($old_end_date == '') {
+			$old_end_date = $old_start_date;
+		}
+
+		if ($old_start_time == '') {
+			$old_start_time = '12:00pm';
+		}
+
+		if ($old_end_time == '') {
+			$old_end_time = '11:59pm';
+		}		
+
 		//Remove any entries for "All Day" and replace with valid times
 		if ($old_start_time == 'All Day') {
 			$old_start_time = '12:00am';
@@ -105,22 +117,26 @@ function d4events_install() {
 	}
 
 	wp_reset_postdata();
-
-	#echo $d4events_version;
-
-	$d4events_version = '3.2.3';
-
-    update_option( "d4events_db_version", $d4events_version );
 }
 
 function d4events_update_db_check() {
-    $d4events_version = '3.2.3';
+    $d4events_version = '3.4.0';
+    $d4events_db_version = get_site_option( 'd4events_db_version' );
+    if($d4events_db_version == '') {
+    	$d4events_db_version = '1.0.0';
+    }
     #require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     #update_option( "d4events_db_version", $d4events_version );
- 
-    if ( get_site_option( 'd4events_db_version' ) != $d4events_version) {
-        d4events_install();
-    }
+
+    //Only run the updater script for sites that are older than 3.2.0
+    if ( version_compare($d4events_db_version, '3.2.0', '<') ) {
+	    d4events_install();
+	}
+
+	//Only update the db version if it is older than the plugin version 
+    if ( version_compare($d4events_db_version, $d4events_version, '<') ) {	    
+	    update_option( "d4events_db_version", $d4events_version );
+	}
 }
 
 #add_action('init','d4events_update_db_check');

@@ -8,6 +8,10 @@
 			'search' 			=> 	'',
 			'category' 			=> 	'',
 			'exclude_category' 	=> 	'',
+			'taxonomy'			=>  'd4events_category',
+			'tax_field'			=>  'name',
+			'terms'				=>  '',
+			'exclude_terms'		=>  '',
 			'agenda' 			=> 	'',
 			'style' 			=> 	'calendar',
 			'links' 			=> 	'true',
@@ -16,7 +20,10 @@
 			'number' 			=> 	'',
 			'thumbnail_size' 	=> 	'thumbnail',
 			'order' 			=> 	'ASC',
-			'content_length' 	=> 	'200'
+			'content_length' 	=> 	'200',
+			'class'				=>  '',
+			'output_filter'     =>  '',
+			'nowrap'			=>	false,
 		), $atts);
 
 		$month = date("n");
@@ -37,31 +44,6 @@
 		} else {
 			$content_length = 200;
 		}
-				
-		if ($attr['category'] != '') {
-			$category = explode(',', $attr['category']);
-			$event_cats_array = array(
-									'taxonomy' => 'd4events_category',
-									'field'    => 'name',
-									'terms'    => $category,
-								);
-		}
-		
-		if ($attr['exclude_category'] != '') {
-			$exclude_category = explode(',', $attr['exclude_category']);			
-			$event_exclude_cats_array = array(
-											'taxonomy' => 'd4events_category',
-											'field'    => 'term_id',
-											'terms'    => $exclude_category,
-											'operator' => 'NOT IN',
-										);
-		}
-
-		$tax_query = array(
-						'relation' => 'AND',
-						$event_cats_array,
-						$event_exclude_cats_array,
-					);	
 
 		$event_style = ' events-style_'.$attr['style'];
 
@@ -79,44 +61,88 @@
 			$number = '200';
 		}
 
+		if ($attr['links'] != 'true') {
+			$showlinks = ' no-event-links';
+		}
 		
 		$order = $attr['order'];
 
 		$thumbnail_size = $attr['thumbnail_size'];
-		
-		if ($attr['style'] == 'agenda') {
 
-			$event_content = '<div class="d4-cal-inner">';
-			$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$attr['style'],'future',$files,$last_event_id,$content_length);			
-			$event_content .= '</div>';
-			$event_content .= '<a class="d4events-loadmore">Load More</a>';	
-		}						
-		
-		elseif ($attr['style'] == 'list') {
-
-			$event_content = '<div class="d4-cal-inner">';
-			$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$attr['style'],$range,$files,$last_event_id,$content_length);			
-			$event_content .= '</div>';
-			if ($range != 'all') {	
-				$event_content .= '<a class="d4events-loadmore">Load More</a>';	
-			}	
-			
-		} else {
-			$range = 'all';
-			$style = 'calendar';
-			$event_content = '<div class="d4-cal-inner">';
-			$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$style,$range,$files,$last_event_id,$content_length);
-			$event_content .= '</div>';
+		//Add legacy support for category attribute. New version uses any taxonomy and you can comma separate multiple taxonomies.
+		if ($attr['category'] != '') {
+			$attr['terms'] = $attr['category'];
+			$terms = explode(',',$attr['terms']);
+		}
+		if ($attr['exclude_category'] != '') {
+			$attr['exclude_terms'] = $attr['exclude_category'];
+			$exclude_terms = explode(',',$attr['exclude_terms']);
 		}
 
-		
-		$buttons = '<div class="cal-change-button cal-prev" data-change="cal-prev">Previous</div><div class="cal-change-button cal-next" data-change="cal-next">Next</div>';
+		$shortcode_args = array(
+			'month' 			=> $month,
+			'year'				=> $year,
+			'taxonomy'			=> $attr['taxonomy'],
+			'tax_field'			=> $attr['tax_field'],
+			'terms'				=> $terms,
+			'exclude_terms'		=> $exclude_terms,	
+			'style'				=> $attr['style'],
+			'links'				=> $attr['links'],
+			'range'				=> $range,
+			'files'				=> $files,
+			'last_event_id'		=> $last_event_id,
+			'content_length'	=> $content_length,
+			'output_filter'		=> $attr['output_filter'],
+		);
 
-		$output = '';
-		$output .= '<div class="d4-cal-wrapper '.$event_style.'">';
-		$output .= $search;
-		$output .= $event_content;
-		$output .= '</div>';	
+		if ($attr['output_filter'] != '') {
+			$output = d4events_draw_calendar($shortcode_args);	
+		} else {
+
+			if ($attr['style'] == 'agenda') {
+
+				$event_content = '<div class="d4-cal-inner"><table cellpadding="0" cellspacing="0" class="calendar">';
+				#$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$attr['style'],'future',$files,$last_event_id,$content_length);
+				$event_content .= d4events_draw_calendar($shortcode_args);				
+				$event_content .= '</table></div>';
+				$event_content .= '<a class="d4events-loadmore">Load More</a>';	
+			}						
+			
+			elseif ($attr['style'] == 'list') {
+
+				$event_content = '<div class="d4-cal-inner">';
+				#$event_content .= d4events_draw_calendar($attr['output_filter'],$month,$year,$category,$exclude_category,$attr['style'],$range,$files,$last_event_id,$content_length);	
+				$event_content .= d4events_draw_calendar($shortcode_args);		
+				$event_content .= '</div>';
+				if ($range != 'all') {	
+					$event_content .= '<a class="d4events-loadmore">Load More</a>';	
+				}	
+				
+			}
+
+			else {
+				$range = 'all';
+				$style = 'calendar';
+				$event_content = '<div class="d4-cal-inner">';
+				#$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$style,$range,$files,$last_event_id,$content_length);
+				$event_content .= d4events_draw_calendar($shortcode_args);	
+				$event_content .= '</div>';
+			}
+
+			
+			$buttons = '<div class="cal-change-button cal-prev" data-change="cal-prev">Previous</div><div class="cal-change-button cal-next" data-change="cal-next">Next</div>';
+
+			if($attr['nowrap']) {
+				$output = $event_content;
+			} else {
+				$output = '';
+				$output .= '<div class="d4-cal-wrapper '.$event_style.$showlinks.' '.$attr['class'].'">';
+				$output .= $search;
+				$output .= $event_content;
+				$output .= '</div>';
+			}
+
+		}			
 
 		return $output;
 	} add_shortcode( 'd4events', 'shortcode_d4events' );
