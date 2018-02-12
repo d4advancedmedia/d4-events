@@ -325,7 +325,7 @@ $d4events_meta_fields = array(
 	array(
         'label'=> 'Start Time',
         'desc'  => 'Start Time',
-        'placeholder' => '00:00am or All Day',
+        'placeholder' => '00:00am',
         'id'    => $prefix.'start_time',
         'type'  => 'time'
     ),
@@ -338,7 +338,7 @@ $d4events_meta_fields = array(
     array(
         'label'=> 'End Time',
         'desc'  => 'End Time',
-        'placeholder' => '00:00am or All Day',
+        'placeholder' => '00:00am',
         'id'    => $prefix.'end_time',
         'type'  => 'time'
     ),
@@ -351,6 +351,12 @@ $d4events_meta_fields = array(
         'label'=> 'Location',
         'desc'  => 'Enter a location',
         'id'    => $prefix.'location',
+        'type'  => 'text'
+    ),
+    array(
+        'label'=> 'Location Description',
+        'desc'  => 'e.g., Enter through the narrow gate',
+        'id'    => $prefix.'location_desc',
         'type'  => 'text'
     ),
     array(
@@ -634,31 +640,52 @@ function d4events_save_meta($post_id) {
     //Validation Section//
     #$_POST('events_errors') = '';  
 
-    if ( ($_POST['d4events_start_date'] == '') && ($_POST['d4events_end_date'] == '')) {
-		$_POST['d4events_start_date'] = date("m/d/Y");
-		$_POST['d4events_end_date'] = date("m/d/Y");
+    //convert all of the posted dates to timestamps for verification
+    $start_date_stamp = strtotime($_POST['d4events_start_date']);
+	$start_time_stamp = strtotime($_POST['d4events_start_time']);
+	$end_date_stamp = strtotime($_POST['d4events_end_date']);
+	$end_time_stamp = strtotime($_POST['d4events_end_time']);
 
-		#$_POST('events_errors') .= 'The Start Date and End Date are required fields and both will default to the current date if left blank.';	
+	/*print('<pre>');
+	print_r($_POST);
+	print('</pre>');*/
+
+	//verify that all of the timestamps are valid timestamps. if not, set them to the current date at noon
+	if(!$start_date_stamp) {
+		$start_date = date("m/d/Y");
+	} else {
+		$start_date = $_POST['d4events_start_date'];
 	}
 
-	if ($_POST['d4events_end_date'] == '') {
-		$_POST['d4events_end_date'] = $_POST['d4events_start_date'];
-
-		#$_POST('events_errors') .= 'The End Date is a required field and will default to the current date if left blank.';
+	if(!$start_time_stamp) {
+		$start_time = '12:00';
+	} else {
+		$start_time = $_POST['d4events_start_time'];
 	}
 
-	if ( ($_POST['d4events_start_date'] == '') && ($_POST['d4events_end_date'] != '')) {
-		$_POST['d4events_start_date'] = $_POST['d4events_end_date'];
-
-		#$_POST('events_errors') .= 'The Start Date is a required field and will default to the current date if left blank.';
+	if(!$end_date_stamp) {
+		$end_date = date("m/d/Y");
+	} else {
+		$end_date = $_POST['d4events_end_date'];
 	}
 
-	if ( (strtotime($_POST['d4events_start_date'])) > (strtotime($_POST['d4events_end_date'])) ) {
-		$_POST['d4events_end_date'] = $_POST['d4events_start_date'];
-
-		#$_POST('events_errors') .= 'The Start Date cannot be later than the End Date.';
+	if(!$end_time_stamp) {
+		$end_time = '12:00';
+	} else {
+		$end_time = $_POST['d4events_end_time'];
 	}
 
+
+	//now make sure that the event start is before the event end. If its earlier, set it to the start time.
+	$event_start = strtotime("$start_date $start_time");
+	$event_end = strtotime("$end_date $end_time");
+
+	if($event_end < $event_start) {
+		$event_end = $event_start;
+	}
+
+
+	//make sure that if repeating or frequency are empty, that no repeating data is saved.
 	if ( ($_POST['d4events_repeating'] == '') || ($_POST['d4events_frequency'] == '') ) {
 
 		$_POST['d4events_repeating'] = '';
@@ -667,61 +694,33 @@ function d4events_save_meta($post_id) {
 		$_POST['d4events_repeat_days'] = '';
 		$_POST['d4events_monthly_repeat_by'] = '';
 		$_POST['d4events_blackout_dates'] = '';
-
-
-		#$_POST('events_errors') .= 'If the repeating checkbox is unchecked, clear out old repeat data.';
 	}
 
+	//reset monthly repeat by if using repeat days (can only be one or the other)
 	if ($_POST['d4events_repeat_days'] != '') {
-
 		$_POST['d4events_monthly_repeat_by'] = '';
-
-		#$_POST('events_errors') .= 'If the repeating checkbox is unchecked, clear out old repeat data.';
 	}
 
+	//reset repeat days if monthly repeat by is set (can only be one or the other)
 	if ($_POST['d4events_monthly_repeat_by'] != '') {
-
 		$_POST['d4events_repeat_days'] = '';
-
-		#$_POST('events_errors') .= 'If the repeating checkbox is unchecked, clear out old repeat data.';
 	}
 
+	//set a "never" value if repeat end date is blank
 	if ( ($_POST['d4events_repeating'] != '') && ($_POST['d4events_repeat_end_date'] == '') ) {
-
 		$_POST['d4events_repeat_end_date'] = 'Never';
-
-		#$_POST('events_errors') .= 'The End Date is a required field and will default to the current date if left blank.';
 	}
 
-	if ( (strtolower($_POST['d4events_start_time']) != 'all day') && (strtolower($_POST['d4events_end_time']) != 'all day') ) {
-		$_POST['d4events_start_time'] = date("g:ia", strtotime($_POST['d4events_start_time']));
-		$_POST['d4events_end_time'] = date("g:ia", strtotime($_POST['d4events_end_time']));
 
-		if ( ($_POST['d4events_start_date'] == $_POST['d4events_end_date']) && (strtotime($_POST['d4events_start_time']) > strtotime($_POST['d4events_end_time'])) ) {
-
-			$_POST['d4events_end_time'] = date("g:ia", strtotime($_POST['d4events_start_time']));
-			#$_POST('events_errors') .= 'The Start Time cannot be later than the End Time.';
-		}
-	} else {
-		$_POST['d4events_start_time'] = 'all day';
-		$_POST['d4events_end_time'] = 'all day';
-	}
 	//End Validation Section//
 
-	//Merge the start/end dates and times into two hyphenated timestamps (start-end) and save to the database.
-	//This will keep start and end times together, keep them sortable, and re-use the same meta key
 
-	$start_date = $_POST['d4events_start_date'];
-	$start_time = $_POST['d4events_start_time'];
-	$end_date = $_POST['d4events_end_date'];
-	$end_time = $_POST['d4events_end_time'];
-
-	update_post_meta( $post_id, 'd4events_start', strtotime("$start_date $start_time"));
-	update_post_meta( $post_id, 'd4events_end', strtotime("$end_date $end_time"));
+	update_post_meta( $post_id, 'd4events_start', $event_start);
+	update_post_meta( $post_id, 'd4events_end', $event_end);
 	update_post_meta($post_id,'d4events_repeat_end_date',strtotime($_POST['d4events_repeat_end_date']));
 
 	//Don't try to save the event dates or times, those were already saved before the loop
-    $dont_save = array('d4events_start_date','d4events_start_time','d4events_end_time','d4events_end_date','d4events_repeat_end_date',);    
+    $dont_save = array('d4events_start_date','d4events_start_time','d4events_end_time','d4events_end_date','d4events_repeat_end_date');    
 
     // loop through fields and save the data
     foreach ($d4events_meta_fields as $field) {   

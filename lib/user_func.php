@@ -39,7 +39,6 @@ function d4events_get_events2($range_start,$range_stop,$shortcode_args) {
 			'meta_key'		=> 'd4events_start',
 			'orderby'		=> 'meta_value_num',
 			'order'			=> 'DESC'
-			//'meta_key'		=> 'd4events_start',
 		);
 	}
 
@@ -67,13 +66,12 @@ function d4events_get_events2($range_start,$range_stop,$shortcode_args) {
 			'meta_query'	=> array($meta_query),
 			'orderby'		=> 'meta_value_num',
 			'order'			=> 'DESC'
-			//'meta_key'		=> 'd4events_start',
-		);
-
-		usort($events_query->posts, 'd4events_sort_by_start_time');
+		);		
 	}
 
 	$events_query = new WP_Query($events_args);
+
+	usort($events_query->posts, 'd4events_sort_by_start_time');
 
 	return $events_query;
 }

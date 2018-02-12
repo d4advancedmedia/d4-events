@@ -19,6 +19,7 @@ $end_time = $datetime_array['d4events_end_time'];
 $title = get_the_title();
 $description = get_the_content();
 $location = get_post_meta( $post->ID, 'd4events_location', true );
+$location_desc = get_post_meta( $post->ID, 'd4events_location_desc', true );
 $registration_link = get_post_meta( $post->ID, 'd4events_registration_link', true );
 $timezone = get_post_meta( $post->ID, 'd4events_timezone', true );
 
@@ -85,6 +86,9 @@ d4events_theme_wrapper_start();
 				' frameborder="0" style="border:0"'.
 				' src="https://www.google.com/maps/embed/v1/search?key='.$d4events_apikey.'&q='.$location.'&zoom=15">'.
 				' </iframe>';
+			}
+			if($location_desc != '') {
+				echo '<p class="single-event-loc-desc">'.$location_desc.'</p>';
 			}
 			if ($registration_link != '') {
 				echo '<a class="button registration-link" href="'.$registration_link.'" target="_blank">Register Here</a>';

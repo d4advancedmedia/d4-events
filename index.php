@@ -120,7 +120,7 @@ function d4events_install() {
 }
 
 function d4events_update_db_check() {
-    $d4events_version = '3.4.0';
+    $d4events_version = '3.4.1';
     $d4events_db_version = get_site_option( 'd4events_db_version' );
     if($d4events_db_version == '') {
     	$d4events_db_version = '1.0.0';
