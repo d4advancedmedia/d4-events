@@ -1,7 +1,7 @@
 <?php
 
 
-include('shortcodes.php');
+include('shortcode-d4events.php');
 
 // Register front end style sheets and scripts.
 add_action( 'wp_enqueue_scripts', 'register_d4events_elements' );
