@@ -304,7 +304,7 @@ function d4events_process_events($event_date,$events_query,$lastdate,$shortcode_
 				$linkclose = '';
 			}			
 
-			$event_duration = date('j', $end_timestamp) - date('j', $start_timestamp);
+			$event_duration = date('j', strtotime($end_timestamp)) - date('j', strtotime($start_timestamp));
 
 			$repeating = get_post_meta( $event_id, 'd4events_repeating', true );
 			$repeating_event = false;
@@ -315,8 +315,8 @@ function d4events_process_events($event_date,$events_query,$lastdate,$shortcode_
 				if ( ($repeating != '') && ($calendar_date > $start_timestamp) && ($calendar_date <= $repeat_end_timestamp) ) {
 
 					//create a new dateperiod object for the repeating event
-					$datePeriod_begin = new DateTime( date('Y-m-d',$start_timestamp) );
-					$datePeriod_end = new DateTime( date('Y-m-d',$end_timestamp) );
+					$datePeriod_begin = new DateTime( date('Y-m-d',strtotime($start_timestamp)) );
+					$datePeriod_end = new DateTime( date('Y-m-d',strtotime($end_timestamp)) );
 					$datePeriod_end = $datePeriod_end->modify( '+1 day' ); 
 
 					$datePeriod_interval = new DateInterval('P1D');
@@ -446,7 +446,7 @@ function d4events_draw_calendar($shortcode_args){
 				}	
 			
 				if ($shortcode_args['range'] == 'past') {
-					$dateObj   = DateTime::createFromFormat('m/d/Y', date('m/d/Y',$current_time));
+					$dateObj   = DateTime::createFromFormat('m/d/Y', date('m/d/Y',strtotime($current_time)));
 					$monthName = $dateObj->format('F'); // March
 
 					$range_start = strtotime('01/01/1800');
@@ -460,7 +460,7 @@ function d4events_draw_calendar($shortcode_args){
 						$list_start_date = $current_time;
 					}
 
-					$dateObj   = DateTime::createFromFormat('m/d/Y', date('m/d/Y',$list_start_date));
+					$dateObj   = DateTime::createFromFormat('m/d/Y', date('m/d/Y',strtotime($list_start_date)));
 					
 					if ($lastdate != '') {
 						$dateObj->modify('+1 day');
