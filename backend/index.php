@@ -1,9 +1,10 @@
 <?php
 
+include ('admin_func.php');
+include ('columns-events.php');
+
 
 //Register admin style sheets and scripts
-add_action('admin_enqueue_scripts', 'd4events_admin_elements');
-add_action('login_enqueue_scripts', 'd4events_admin_elements');	
 function d4events_admin_elements() {
 	global $d4events_apikey;
 	global $d4events_version;
@@ -19,5 +20,5 @@ function d4events_admin_elements() {
 	wp_enqueue_script('thickbox');
 	wp_enqueue_style('thickbox');
 }
-
-
+add_action('admin_enqueue_scripts', 'd4events_admin_elements');
+add_action('login_enqueue_scripts', 'd4events_admin_elements');	

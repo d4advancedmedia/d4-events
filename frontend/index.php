@@ -1,6 +1,8 @@
 <?php
 
 
+include('shortcodes.php');
+
 // Register front end style sheets and scripts.
 add_action( 'wp_enqueue_scripts', 'register_d4events_elements' );
 function register_d4events_elements() {

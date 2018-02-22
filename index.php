@@ -11,7 +11,7 @@ $d4events_version = '4.0.0';
 
 include ('config.php');
 include ('database/index.php');
+include ('modules/index.php');
 include ('frontend/index.php');
 include ('backend/index.php');
-include ('modules/index.php');
 
