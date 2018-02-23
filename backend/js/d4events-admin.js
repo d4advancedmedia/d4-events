@@ -4,44 +4,50 @@ jQuery('body').on('focus',".datepicker_recurring_start", function(){
 
 jQuery(document).ready(function($) {
 
-function initialize() {
-
-var input = document.getElementById('d4events_location');
-var autocomplete = new google.maps.places.Autocomplete(input);
-}
-
-google.maps.event.addDomListener(window, 'load', initialize);
-
-var repeating_event_fields = $('.row-d4events_frequency, .row-d4events_repeat_days, .row-d4events_monthly_repeat_by, .row-d4events_repeat_end_date, .row-d4events_blackout_dates');
-$(repeating_event_fields).slideUp(0);
-
-if ($('#d4events_repeating').is(':checked')) {
-	$(repeating_event_fields).slideDown(0);
-}
-
-if ( ($('#d4events_frequency').val() == "Weekly") && ($('#d4events_repeating').is(':checked')) ) {
-	$('.row-d4events_repeat_days').slideDown(0);
-	$('.row-d4events_monthly_repeat_by').slideUp(0).find('input').prop('checked', false);
-} else if ($('#d4events_repeating').is(':checked')) {
-	$('.row-d4events_repeat_days').slideUp(0).find('input').prop('checked', false);
-	$('.row-d4events_monthly_repeat_by, .row-d4events_repeat_end_date, .row-d4events_blackout_dates').slideDown(0);
-}
-
-$('#d4events_repeating').change(function() {
-	if ($('#d4events_repeating').is(':checked')) {
-		$('.row-d4events_frequency').slideDown();
-		var frequency_value = $('#d4events_frequency').val();
-		if (frequency_value == 'Weekly') {
-			$('.row-d4events_repeat_days').slideDown();
-		}
-	} else {
-		$(repeating_event_fields).slideUp();
+	function initialize() {
+		var input = document.getElementById('d4events_location');
+		var autocomplete = new google.maps.places.Autocomplete(input);
 	}
-});
+	google.maps.event.addDomListener(window, 'load', initialize);
 
-$('#d4events_frequency').change(function() {
+
+	// set the selectors for repeating event meta areas
+	var repeating_event_fields = $('.row-d4events_frequency, .row-d4events_repeat_days, .row-d4events_monthly_repeat_by, .row-d4events_repeat_end_date, .row-d4events_blackout_dates');
+
+	// ensure that repeating events area is hidden
+	$(repeating_event_fields).slideUp(0);
+
+	// show repeating events area if "Repeating..." checkbox is checked
+	if ($('#d4events_repeating').is(':checked')) {
+		$(repeating_event_fields).slideDown(0);
+	}
+
+	// handle whether repeating event is by month or week
+	if ( ($('#d4events_frequency').val() == "Weekly") && ($('#d4events_repeating').is(':checked')) ) {
+		// frequency = weekly case
+		$('.row-d4events_repeat_days').slideDown(0);
+		$('.row-d4events_monthly_repeat_by').slideUp(0).find('input').prop('checked', false);
+	} else if ($('#d4events_repeating').is(':checked')) {
+		// frequency = monthly case
+		$('.row-d4events_repeat_days').slideUp(0).find('input').prop('checked', false);
+		$('.row-d4events_monthly_repeat_by, .row-d4events_repeat_end_date, .row-d4events_blackout_dates').slideDown(0);
+	}
+
+	// more handling for which part of repeating 
+	$('#d4events_repeating').change(function() {
+		if ($('#d4events_repeating').is(':checked')) {
+			$('.row-d4events_frequency').slideDown();
+			var frequency_value = $('#d4events_frequency').val();
+			if (frequency_value == 'Weekly') {
+				$('.row-d4events_repeat_days').slideDown();
+			}
+		} else {
+			$(repeating_event_fields).slideUp();
+		}
+	});
+
+	$('#d4events_frequency').change(function() {
 		var frequency_value = $('#d4events_frequency').val();
-
 		if (frequency_value == 'Weekly') {
 			$('.row-d4events_repeat_days').slideDown();
 			$('.row-d4events_monthly_repeat_by').slideUp().find('input').prop('checked', false);
@@ -49,9 +55,7 @@ $('#d4events_frequency').change(function() {
 			$('.row-d4events_repeat_days').slideUp().find('input').prop('checked', false);
 			$('.row-d4events_monthly_repeat_by').slideDown();
 		}
-});
-
-
+	});
 });
 
 datefield = jQuery('#blackout_dates input:last-of-type').clone().attr('id','');
