@@ -82,12 +82,14 @@ function d4events_get_events2($range_start,$range_stop,$shortcode_args) {
 
 
 function d4events_sort_by_start_time($a,$b) {
+
 	$datetime_array_a = d4events_fetch_datetime($a->ID);
 	$datetime_array_b = d4events_fetch_datetime($b->ID);
 
 	if ( strtotime($datetime_array_a['d4events_start_time']) <= strtotime($datetime_array_b['d4events_start_time']) ) {
 		return 'success';
 	}
+
 }
 
 

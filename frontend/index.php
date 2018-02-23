@@ -3,10 +3,13 @@
 
 
 include('func-parse_events.php');
-include('shortcode-d4events.php');
 
+
+include('shortcode-d4events.php');
 include('ajax-d4events.php');
-include('templates-d4events.php');
+
+include('filter-the_content-d4events-single.php');
+#include('templates-d4events.php');
 
 include('rssfeed-d4events.php');
 
