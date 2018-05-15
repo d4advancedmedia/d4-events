@@ -129,8 +129,13 @@ function d4events_draw_calendar( $shortcode_args ){
 				$dates_array = array();
 
 				# get all events, place in array to send to d4events_get_events()
+				$fetch_args = array(
+						'range_start'    => $range_start,
+						'range_stop'     => $range_stop,
+						'shortcode_args' => $shortcode_args,
+					);
 
-				$events_query = d4events_get_events2($range_start,$range_stop,$shortcode_args);
+					$events_query = fetch_d4events($fetch_args); 
 
 				/* row for week one */
 				$calendar.= '<tr class="calendar-row">';
@@ -143,7 +148,7 @@ function d4events_draw_calendar( $shortcode_args ){
 
 				$month_has_events = false;
 
-				if($shortcode_args['range'] == 'past') {
+				if ( $shortcode_args['range'] == 'past' ) {
 				
 					/* keep going with days.... */
 					for($list_day = 31; $list_day >= 1; $list_day--):

@@ -103,7 +103,7 @@ function fetch_d4events( $fetch_args ) {
 
 		} wp_reset_postdata();
 
-		$events = apply_filters( 'd4events_post_build', $events_query );
+		$events = apply_filters( 'd4events_post_build', $events );
 
 		return $events;
 
