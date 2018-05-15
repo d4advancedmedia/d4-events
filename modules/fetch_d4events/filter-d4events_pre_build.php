@@ -13,10 +13,10 @@ function d4events_sort_by_start_time( $a, $b ) {
 }
 
 
-function filter_sort_events_by_start_time( $events ) {
+function filter_sort_events_by_start_time( $events_query ) {
 
-	usort( $events, 'd4events_sort_by_start_time' );
+	usort( $events_query, 'd4events_sort_by_start_time' );
 
-	return $events;
+	return $events_query;
 
 } add_filter('d4events_pre_build', 'filter_sort_events_by_start_time');
