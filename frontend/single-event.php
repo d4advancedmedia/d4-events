@@ -1,27 +1,28 @@
 <?php
 get_header();
 
-//Create Variables
 
-$datetime_array = d4events_fetch_datetime($post->ID);
+$event_id = get_the_id();
 
-if ($_GET['date'] != '') {
-	$start_date = date('m/d/Y',$_GET['date']);
-	$end_date = date('m/d/Y',$_GET['date'] + (strtotime($datetime_array['d4events_end_date']) - strtotime($datetime_array['d4events_start_date'])));
+$datetime_array = d4events_fetch_datetime($event_id);
 
-} else {
+#if ($_GET['date'] != '') {
+#	$start_date = date('m/d/Y',$_GET['date']);
+#	$end_date = date('m/d/Y',$_GET['date'] + (strtotime($datetime_array['d4events_end_date']) - strtotime($datetime_array['d4events_start_date'])));
+#
+#} else {
 	$start_date = $datetime_array['d4events_start_date'];
 	$end_date = $datetime_array['d4events_end_date'];
-}
+#}
 
 $start_time = $datetime_array['d4events_start_time'];
 $end_time = $datetime_array['d4events_end_time'];
 $title = get_the_title();
 $description = get_the_content();
-$location = get_post_meta( $post->ID, 'd4events_location', true );
-$location_desc = get_post_meta( $post->ID, 'd4events_location_desc', true );
-$registration_link = get_post_meta( $post->ID, 'd4events_registration_link', true );
-$timezone = get_post_meta( $post->ID, 'd4events_timezone', true );
+$location = get_post_meta( $event_id, 'd4events_location', true );
+$location_desc = get_post_meta( $event_id, 'd4events_location_desc', true );
+$registration_link = get_post_meta( $event_id, 'd4events_registration_link', true );
+$timezone = get_post_meta( $event_id, 'd4events_timezone', true );
 
 //Create addtocalendar.com readable values
 if (strtotime($start_time) == strtotime('xyz')) {

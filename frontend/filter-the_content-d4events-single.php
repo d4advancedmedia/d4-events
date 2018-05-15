@@ -10,14 +10,14 @@ function filter_the_content_d4events( $content ) {
 
 		$datetime_array = d4events_fetch_datetime($post_id);
 
-		if ($_GET['date'] != '') {
-			$start_date = date('m/d/Y',strtotime($_GET['date']));
-			$end_date = date('m/d/Y',$_GET['date'] + (strtotime($datetime_array['d4events_end_date']) - strtotime($datetime_array['d4events_start_date'])));
+		#if ($_GET['date'] != '') {
+		#	$start_date = date('m/d/Y',strtotime($_GET['date']));
+		#	$end_date = date('m/d/Y',$_GET['date'] + (strtotime($datetime_array['d4events_end_date']) - strtotime($datetime_array['d4events_start_date'])));
 
-		} else {
+		#} else {
 			$start_date = $datetime_array['d4events_start_date'];
 			$end_date = $datetime_array['d4events_end_date'];
-		}
+		#}
 
 		$start_time = $datetime_array['d4events_start_time'];
 		$end_time = $datetime_array['d4events_end_time'];

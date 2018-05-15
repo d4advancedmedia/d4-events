@@ -335,7 +335,7 @@ p.events_list-description:empty {
 }
 
 .d4-cal-wrapper.events-style_agenda .agenda-date-column {
-    background: #279ad1 none repeat scroll 0 0;
+    background: #003666 none repeat scroll 0 0;
     color: #fff;
     border: 0 none;
 }
@@ -385,7 +385,7 @@ a.d4events-loadmore:hover {
     overflow-x: auto;
 }
 .d4-cal-wrapper .agenda-time-column {
-    width: 25%;
+    width: 40px;
 }
 /* ---------- Mobile ---------- */
 @media all and (max-width: 675px)  {

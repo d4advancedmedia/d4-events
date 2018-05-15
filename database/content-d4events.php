@@ -46,7 +46,7 @@ function d4events_posttype() {
 		'label'                 => __( $d4events_posttype_singular, 'd4events' ),
 		'description'           => __( 'd4events', 'd4events' ),
 		'labels'                => $labels,
-		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions','custom-fields' ),
+		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions','custom-fields', 'author' ),
 		'taxonomies'            => array( 'd4events_category', 'd4events_tag' ),
 		'hierarchical'          => false,
 		'public'                => true,
