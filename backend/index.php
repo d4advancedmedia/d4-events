@@ -1,6 +1,5 @@
 <?php
 
-include ('admin_func.php');
 include ('columns-events.php');
 
 
