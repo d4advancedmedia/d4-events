@@ -33,7 +33,7 @@
 		}
 
 		if ($attr['search'] != '') {
-			$search  = '<form class="search-form" role="search" method="get"action="' . home_url( '/' ) . '">';
+			$search  = '<form class="search-form" role="search" method="get" action="' . home_url( '/' ) . '">';
 				$search .= '<input type="hidden" name="post_type" value="events" />';
 				$search .= '<label><span class="screenreader">Search for:</span></label>';
 				$search .= '<input class="search-field" type="search" placeholder="Search Events..." value="" name="s" title="Search for:" />';
@@ -106,16 +106,14 @@
 			if ($attr['style'] == 'agenda') {
 
 				$event_content = '<div class="d4-cal-inner"><table cellpadding="0" cellspacing="0" class="calendar">';
-				#$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$attr['style'],'future',$files,$last_event_id,$content_length);
-				$event_content .= d4events_draw_calendar($shortcode_args);				
+					$event_content .= d4events_draw_calendar($shortcode_args);
 				$event_content .= '</table></div>';
 				$event_content .= '<a class="d4events-loadmore">Load More</a>';
 
 			} elseif ($attr['style'] == 'list') {
 
 				$event_content = '<div class="d4-cal-inner">';
-				#$event_content .= d4events_draw_calendar($attr['output_filter'],$month,$year,$category,$exclude_category,$attr['style'],$range,$files,$last_event_id,$content_length);	
-				$event_content .= d4events_draw_calendar($shortcode_args);		
+					$event_content .= d4events_draw_calendar($shortcode_args);
 				$event_content .= '</div>';
 
 				if ($range != 'all') {
@@ -127,7 +125,6 @@
 				$range = 'all';
 				$style = 'calendar';
 				$event_content = '<div class="d4-cal-inner">';
-					#$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$style,$range,$files,$last_event_id,$content_length);
 					$event_content .= d4events_draw_calendar($shortcode_args);	
 				$event_content .= '</div>';
 
@@ -143,9 +140,9 @@
 			} else {
 
 				$output = '';
-				$output .= '<div class="d4-cal-wrapper '.$event_style.$showlinks.' '.$attr['class'].'">';
-				$output .= $search;
-				$output .= $event_content;
+				$output .= '<div class="d4-cal-wrapper '. $event_style . $showlinks . ' ' . $attr['class'] . '">';
+					$output .= $search;
+					$output .= $event_content;
 				$output .= '</div>';
 
 			}
