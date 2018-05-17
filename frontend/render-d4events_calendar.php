@@ -118,29 +118,29 @@ function d4events_draw_calendar( $shortcode_args ){
 				
 				// draw table
 					$calendar .= '<div class="d4-event-calendar"';
-						calendar .= ' data-month="'.$shortcode_args['month'].'"';
-						calendar .= ' data-year="'.$shortcode_args['year'].'"';
-						calendar .= ' data-terms="'.$shortcode_args['terms'].'"';
-						calendar .= ' data-taxonomy="'.$shortcode_args['taxonomy'].'"';
-						calendar .= ' data-tax_field="'.$shortcode_args['tax_field'].'"';
-						calendar .= ' data-exclude_terms="'.$shortcode_args['exclude_terms'].'"';
-					calendar .= '>';
-					calendar .= '<div class="cal-change-button cal-prev" data-change="cal-prev"></div>';
-					calendar .= '<div class="cal-change-button cal-next" data-change="cal-next"></div>';
-					calendar .= '<h2>';
-						calendar .= $monthName;
-						calendar .= ' ';
-						calendar .= $shortcode_args['year'];
-					calendar .= '</h2>';
-					calendar .= '<table cellpadding="0" cellspacing="0" class="calendar">';
+						$calendar .= ' data-month="'         . $shortcode_args['month']         .'"';
+						$calendar .= ' data-year="'          . $shortcode_args['year']          .'"';
+						$calendar .= ' data-terms="'         . $shortcode_args['terms']         .'"';
+						$calendar .= ' data-taxonomy="'      . $shortcode_args['taxonomy']      .'"';
+						$calendar .= ' data-tax_field="'     . $shortcode_args['tax_field']     .'"';
+						$calendar .= ' data-exclude_terms="' . $shortcode_args['exclude_terms'] .'"';
+					$calendar .= '>';
+					$calendar .= '<div class="cal-change-button cal-prev" data-change="cal-prev"></div>';
+					$calendar .= '<div class="cal-change-button cal-next" data-change="cal-next"></div>';
+					$calendar .= '<h2>';
+						$calendar .= $monthName;
+						$calendar .= ' ';
+						$calendar .= $shortcode_args['year'];
+					$calendar .= '</h2>';
+					$calendar .= '<table cellpadding="0" cellspacing="0" class="calendar">';
 
 				// table headings
 					$headings = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
 
 					$calendar.= '<tr class="calendar-row"><td class="calendar-day-head">';
-						calendar .= implode('</td><td class="calendar-day-head">',$headings);
-						calendar .= '</td>';
-					calendar .= '</tr>';
+						$calendar .= implode('</td><td class="calendar-day-head">',$headings);
+						$calendar .= '</td>';
+					$calendar .= '</tr>';
 
 					$agenda_headings = array('Day','Date','Time','Event');
 					
@@ -313,7 +313,7 @@ function d4events_draw_calendar( $shortcode_args ){
 			// Display No Meeting Events Notice
 				if ( $month_has_events == false ) {
 					$calendar .= '<div class="no-events">';
-						$calendar .= __('There are no scheduled events for this month', 'd4events')
+						$calendar .= __('There are no scheduled events for this month', 'd4events');
 					$calendar .= '</div>';
 				}
 

@@ -3,15 +3,7 @@
 
 
 
-
-
-
-
-
-
-
-
-//Processes events to see if they fall on a given date, including repeating events
+// Processes events to see if they fall on a given date, including repeating events
 function d4events_process_events( $event_date, $events_query, $lastdate, $shortcode_args ) {
 	
 	$calendar_date = strtotime($event_date);
@@ -23,7 +15,9 @@ function d4events_process_events( $event_date, $events_query, $lastdate, $shortc
 	$i=0;
 	$output['content'] = '';
 
-	while ( $events_query->have_posts() ) { $events_query->the_post();
+	while ( $events_query->have_posts() ) {
+
+		$events_query->the_post();
 
 		$event_id = get_the_id();
 
@@ -33,7 +27,7 @@ function d4events_process_events( $event_date, $events_query, $lastdate, $shortc
 			$blackoutdates = array();
 		}		
 
-		if (!in_array(date('m/d/Y',$calendar_date), $blackoutdates)) {
+		if ( ! in_array( date('m/d/Y', $calendar_date) , $blackoutdates ) ) {
 
 			$datetime_array = d4events_fetch_datetime($event_id);
 			$start_timestamp = get_post_meta($event_id,'d4events_start',true);
@@ -52,24 +46,13 @@ function d4events_process_events( $event_date, $events_query, $lastdate, $shortc
 			$repeat_starttime = $calendar_date + ($start_timestamp - strtotime($datetime_array['d4events_start_date']));
 			$repeat_endtime = $calendar_date + ($end_timestamp - $start_timestamp);
 
-			if ( ($shortcode_args['range'] == 'past') && ($repeat_starttime > strtotime('now')) ) {
+			if ( ($shortcode_args['range'] == 'past') && ($repeat_starttime > $current_time) ) {
 				//event is in the future, range is in the past, exit.
 				return;
 			} elseif ( ($shortcode_args['range'] == 'future') && ($repeat_starttime < $current_time) ) {
 				//event is in the future, range is in the past, exit.
 				return;
 			}
-				
-			$posttitle = '<h5 class="cal-event-title">' . get_the_title() . '</h5>';
-
-			$remove_link = get_post_meta( $event_id, 'd4events_remove_link', true);
-			if ($remove_link != 'on') {
-				$linkopen = '<a href="'.get_the_permalink().'">';
-				$linkclose = "</a>";
-			} else {
-				$linkopen = '';
-				$linkclose = '';
-			}			
 
 			$event_duration = date('j', strtotime($end_timestamp)) - date('j', strtotime($start_timestamp));
 
@@ -91,6 +74,7 @@ function d4events_process_events( $event_date, $events_query, $lastdate, $shortc
 					$datePeriod_daterange = new DatePeriod($datePeriod_begin, $datePeriod_interval ,$datePeriod_end);
 
 					$weekly_repeat_days = get_post_meta( $event_id, 'd4events_repeat_days', true );
+
 					if ($weekly_repeat_days != '') {
 						if (in_array($day_of_the_week, $weekly_repeat_days)) {
 							$repeating_event = true;
@@ -120,7 +104,7 @@ function d4events_process_events( $event_date, $events_query, $lastdate, $shortc
 				}
 			}
 			
-			if ($shortcode_args['style'] == 'list') {
+			if ( $shortcode_args['style'] == 'list' ) {
 
 				if (	( $calendar_date == strtotime($datetime_array['d4events_start_date']) ) || ($repeating_event == true)	) {
 
@@ -129,9 +113,8 @@ function d4events_process_events( $event_date, $events_query, $lastdate, $shortc
 					$i++;
 
 				}
-			}
 
-			elseif (	( ($calendar_date >= strtotime($datetime_array['d4events_start_date'])) && ($calendar_date <= $end_timestamp)) || ($repeating_event == true)	) {
+			} elseif (	( ($calendar_date >= strtotime($datetime_array['d4events_start_date'])) && ($calendar_date <= $end_timestamp)) || ($repeating_event == true)	) {
 
 				//Render output			
 				$output['content'] .= d4events_render_single( $shortcode_args, $calendar_date );
@@ -139,9 +122,10 @@ function d4events_process_events( $event_date, $events_query, $lastdate, $shortc
 
 			}
 		}
-	}
+	} wp_reset_postdata();
 	$output['total'] = $i;
 	return $output;
-	wp_reset_postdata();
+	
+
 }
 
