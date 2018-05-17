@@ -97,13 +97,21 @@
 			'output_filter'    => $attr['output_filter'],
 		);
 
+
+		$events = array('cats', 'dogs', 'ocelots');
+
+		$output = apply_filters('d4events_output', '', $events, $shortcode_args);
+
+		/*
 		if ($attr['output_filter'] != '') {
 
 			$output = d4events_draw_calendar($shortcode_args);
 
 		} else {
 
+
 			if ($attr['style'] == 'agenda') {
+
 
 				$event_content = '<div class="d4-cal-inner"><table cellpadding="0" cellspacing="0" class="calendar">';
 					$event_content .= d4events_draw_calendar($shortcode_args);
@@ -149,6 +157,7 @@
 
 		}			
 
+		//*/
 		return $output;
 
 	} add_shortcode( 'd4events', 'shortcode_d4events' );

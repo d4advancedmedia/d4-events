@@ -1,5 +1,6 @@
 <?php
 
+include('filter-d4events_output_agenda.php');
 
 include('render-d4events_single.php');
 include('render-d4events_calendar.php');
