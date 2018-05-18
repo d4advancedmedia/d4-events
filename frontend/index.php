@@ -10,7 +10,6 @@ include('ajax-d4events.php');
 include('filter-the_content-d4events-single.php');
 #include('templates-d4events.php');
 
-include('rssfeed-d4events.php');
 
 // Register front end style sheets and scripts.
 	function register_d4events_elements() {
