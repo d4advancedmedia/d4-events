@@ -86,7 +86,7 @@ function fetch_d4events( $fetch_args ) {
 
 	if ( $events_query->have_posts() ) {
 
-		$events_query = apply_filters( 'd4events_pre_build', $events_query );
+		$events_query = apply_filters( 'd4events_pre_build', $events_query, $fetch_args );
 
 		$events = array();
 
@@ -99,11 +99,11 @@ function fetch_d4events( $fetch_args ) {
 				'id' => $id
 			);
 
-			$events[$id] = apply_filters( 'd4events_build', $event );
+			$events[$id] = apply_filters( 'd4events_build', $event, $fetch_args );
 
 		} wp_reset_postdata();
 
-		$events = apply_filters( 'd4events_post_build', $events );
+		$events = apply_filters( 'd4events_post_build', $events, $fetch_args );
 
 		return $events;
 
