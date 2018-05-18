@@ -80,7 +80,11 @@
 
 function fetch_d4events( $fetch_args ) {
 
-	$events_args = apply_filters( 'd4events_query_args', array(), $fetch_args );
+	$default_query_args = array(
+		'post_type'      => 'd4events',
+		'posts_per_page' => -1,
+	);
+	$events_args = apply_filters( 'd4events_query_args', $default_query_args, $fetch_args );
 
 	$events_query = new WP_Query( $events_args );
 
@@ -96,21 +100,22 @@ function fetch_d4events( $fetch_args ) {
 			$id = get_the_id();
 
 			$event = array(
-				'id' => $id
+				'id'    => $id,
+				'title' => get_the_title(),
 			);
 
 			$events[$id] = apply_filters( 'd4events_build', $event, $fetch_args );
 
-		} wp_reset_postdata();
+		} 
 
-		$events = apply_filters( 'd4events_post_build', $events, $fetch_args );
-
-		return $events;
+		$output = apply_filters( 'd4events_post_build', $events, $fetch_args );
 
 	} else {
 
-		return false;
+		$output = false;
 
-	}
+	} wp_reset_postdata();
+
+	return $output;
 
 }

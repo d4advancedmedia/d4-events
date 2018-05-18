@@ -2,34 +2,52 @@
 
 	function shortcode_d4events( $atts ) {
 
-		$attr = shortcode_atts(array(
-			'year'              => date("Y"),
-			'month'             => '',
-			'search'            => '',
-			'category'          => '',
-			'exclude_category'  => '',
-			'taxonomy'          => 'd4events_category',
-			'tax_field'         => 'name',
-			'terms'             => '',
-			'exclude_terms'     => '',
-			'agenda'            => '',
-			'style'             => 'calendar',
-			'links'             => 'true',
-			'files'             => '',
-			'range'             => 'all',
-			'number'            => '',
-			'thumbnail_size'    => 'thumbnail',
-			'order'             => 'ASC',
-			'content_length'    => '200',
-			'class'             => '',
-			'output_filter'     => '',
-			'nowrap'            => false,
-		), $atts);
+		$default_shortcode_atts = array(
+
+			// Order query
+				'order'             => 'ASC',
+
+			// Limit Query
+				'range'             => 'all',
+				'year'              => date("Y"),
+				'month'             => '',
+
+			// Taxonomy query
+				'category'          => '',
+				'exclude_category'  => '',
+				'taxonomy'          => 'd4events_category',
+				'tax_field'         => 'name',
+				'terms'             => '',
+				'exclude_terms'     => '',
+
+			// Content Rendering
+				'search'            => '',
+				'agenda'            => '',
+				'style'             => 'calendar',
+				'links'             => 'true',
+				'thumbnail_size'    => 'thumbnail',
+				'output_filter'     => '',
+				'content_length'    => '200',
+				'class'             => '',
+
+			// Other
+				'files'             => '',
+				'number'            => '',
+				'nowrap'            => false,
+
+		);
+
+		$default_shortcode_atts = apply_filters( 'd4events_shortcode_atts', $default_shortcode_atts );
+
+		$attr = shortcode_atts( $default_shortcode_atts, $atts);
+
+
+
 
 		$month = date("n");
 		$year  = $attr['year'];
 
-		if ($attr['search'] != '') {
+		if ( $attr['search'] != '' ) {
 			$search  = '<form class="search-form" role="search" method="get" action="' . home_url( '/' ) . '">';
 				$search .= '<input type="hidden" name="post_type" value="events" />';
 				$search .= '<label><span class="screenreader">Search for:</span></label>';
@@ -46,7 +64,7 @@
 
 		$event_style = ' events-style_'.$attr['style'];
 
-		if ($attr['agenda'] != '') {
+		if ( $attr['agenda'] != '' ) {
 			$event_style .= ' agenda-view';
 		}	
 
@@ -54,7 +72,7 @@
 
 		$range = $attr['range'];
 
-		if ($attr['number'] != '') {
+		if ( $attr['number'] != '' ) {
 			$number = intval($attr['number']);
 		} else {
 			$number = '200';
@@ -66,14 +84,12 @@
 		
 		$order = $attr['order'];
 
-		$thumbnail_size = $attr['thumbnail_size'];
-
 		//Add legacy support for category attribute. New version uses any taxonomy and you can comma separate multiple taxonomies.
-		$terms = array();
-		if ($attr['category'] != '') {
-			$attr['terms'] = $attr['category'];
-			$terms = explode(',',$attr['terms']);
-		} 
+			$terms = array();
+			if ($attr['category'] != '') {
+				$attr['terms'] = $attr['category'];
+				$terms = explode(',',$attr['terms']);
+			} 
 
 		$exclude_terms = array();
 		if ($attr['exclude_category'] != '') {
@@ -90,6 +106,7 @@
 				'year'             => $year,
 				'taxonomy'         => $attr['taxonomy'],
 				'tax_field'        => $attr['tax_field'],
+				'thumbnail_size'   => $attr['thumbnail_size'],
 				'terms'            => $terms,
 				'exclude_terms'    => $exclude_terms,	
 				'style'            => $attr['style'],
@@ -105,7 +122,20 @@
 
 		$events = fetch_d4events($full_args);
 
-		$output = apply_filters('d4events_output', '', $events, $full_args);
+		if ( empty($events) ) {
+
+			$output = __('No events', 'd4events');
+
+		} elseif ( ! empty($attr['output_filter']) ) {
+
+			$output = d4events_draw_calendar($shortcode_args);
+
+		} else {
+			
+			$output = apply_filters('d4events_output', '', $events, $full_args);
+
+		}
+
 
 		/*
 		if ($attr['output_filter'] != '') {

@@ -1,13 +1,19 @@
 <?php
 
 function filter_d4events_build( $output, $args ) {
-
-	$thumbnail_size = 'thumbnail';
 	 
 	$output['title']       = get_the_title();
 	$output['url']         = get_the_permalink();
-	$output['start_stamp'] = get_the_post_thumbnail( $output['id'], $thumbnail_size );
+
+	if ( has_post_thumbnail() ) {
+		$output['thumbnail']  = get_the_post_thumbnail( $output['id'], $args['shortcode_args']['thumbnail_size'] );
+	} else {
+		$output['thumbnail']  = false;
+	}
+
+	$output['start_stamp'] = get_post_meta($event_id, 'd4events_start', true);
+	$output['stop_stamp']  = get_post_meta($event_id, 'd4events_end', true);
 
 	return $output;
 
-} add_shortcode( 'd4events_build', 'filter_d4events_build', 10, 2 );
+} add_filter( 'd4events_build', 'filter_d4events_build', 10, 2 );
