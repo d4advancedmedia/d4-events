@@ -14,7 +14,7 @@ function d4events_query_args_defaults( $events_args, $fetch_args ) {
 		$tax_query['event_terms_array'] = array(
 			'taxonomy' 	=> $fetch_args['shortcode_args']['taxonomy'],
 			'field'    	=> $fetch_args['shortcode_args']['tax_field'],
-			'terms'    	=> $shortcode_args['terms'],
+			'terms'    	=> $fetch_args['shortcode_args']['terms'],
 		);
 
 	}

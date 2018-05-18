@@ -4,7 +4,7 @@
 function d4events_output_agenda_default( $output, $events = array(), $args = array() ) {
 
 
-	if ( $args['style'] == 'agenda' ) {
+	if ( $args['shortcode_args']['style'] == 'agenda' ) {
 
 		$classes = array(
 			'd4-cal-wrapper',

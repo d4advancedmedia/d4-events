@@ -3,7 +3,7 @@
 	function shortcode_d4events( $atts ) {
 
 		$attr = shortcode_atts(array(
-			'year'              => '',
+			'year'              => date("Y"),
 			'month'             => '',
 			'search'            => '',
 			'category'          => '',
@@ -27,10 +27,7 @@
 		), $atts);
 
 		$month = date("n");
-
-		if ($attr['year'] != '') {
-			$year = date("Y");
-		}
+		$year  = $attr['year'];
 
 		if ($attr['search'] != '') {
 			$search  = '<form class="search-form" role="search" method="get" action="' . home_url( '/' ) . '">';
@@ -63,7 +60,7 @@
 			$number = '200';
 		}
 
-		if ($attr['links'] != 'true') {
+		if ( $attr['links'] != 'true' ) {
 			$showlinks = ' no-event-links';
 		}
 		
@@ -72,16 +69,17 @@
 		$thumbnail_size = $attr['thumbnail_size'];
 
 		//Add legacy support for category attribute. New version uses any taxonomy and you can comma separate multiple taxonomies.
+		$terms = array();
 		if ($attr['category'] != '') {
 			$attr['terms'] = $attr['category'];
 			$terms = explode(',',$attr['terms']);
-		}
+		} 
+
+		$exclude_terms = array();
 		if ($attr['exclude_category'] != '') {
 			$attr['exclude_terms'] = $attr['exclude_category'];
 			$exclude_terms = explode(',',$attr['exclude_terms']);
 		}
-
-
 
 
 		$full_args = array(
@@ -98,7 +96,7 @@
 				'links'            => $attr['links'],
 				'range'            => $range,
 				'files'            => $files,
-				'last_event_id'    => $last_event_id,
+			//	'last_event_id'    => $last_event_id,
 				'content_length'   => $content_length,
 				'output_filter'    => $attr['output_filter'],
 			),
