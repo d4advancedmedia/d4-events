@@ -81,26 +81,33 @@
 			$exclude_terms = explode(',',$attr['exclude_terms']);
 		}
 
-		$shortcode_args = array(
-			'month'            => $month,
-			'year'             => $year,
-			'taxonomy'         => $attr['taxonomy'],
-			'tax_field'        => $attr['tax_field'],
-			'terms'            => $terms,
-			'exclude_terms'    => $exclude_terms,	
-			'style'            => $attr['style'],
-			'links'            => $attr['links'],
-			'range'            => $range,
-			'files'            => $files,
-			'last_event_id'    => $last_event_id,
-			'content_length'   => $content_length,
-			'output_filter'    => $attr['output_filter'],
+
+
+
+		$full_args = array(
+			'range_start'    => '',
+			'range_stop'     => '',
+			'shortcode_args' => array(
+				'month'            => $month,
+				'year'             => $year,
+				'taxonomy'         => $attr['taxonomy'],
+				'tax_field'        => $attr['tax_field'],
+				'terms'            => $terms,
+				'exclude_terms'    => $exclude_terms,	
+				'style'            => $attr['style'],
+				'links'            => $attr['links'],
+				'range'            => $range,
+				'files'            => $files,
+				'last_event_id'    => $last_event_id,
+				'content_length'   => $content_length,
+				'output_filter'    => $attr['output_filter'],
+			),
 		);
 
 
-		$events = array('cats', 'dogs', 'ocelots');
+		$events = fetch_d4events($full_args);
 
-		$output = apply_filters('d4events_output', '', $events, $shortcode_args);
+		$output = apply_filters('d4events_output', '', $events, $full_args);
 
 		/*
 		if ($attr['output_filter'] != '') {

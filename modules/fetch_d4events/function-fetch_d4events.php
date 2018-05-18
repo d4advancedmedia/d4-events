@@ -80,7 +80,7 @@
 
 function fetch_d4events( $fetch_args ) {
 
-	$events_args = apply_filters( 'd4events_query_args', $events_args, $fetch_args );
+	$events_args = apply_filters( 'd4events_query_args', array(), $fetch_args );
 
 	$events_query = new WP_Query( $events_args );
 

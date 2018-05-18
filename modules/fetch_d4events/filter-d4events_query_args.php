@@ -3,8 +3,7 @@
 
 
 
-function d4events_query_args_defaults( $events_args, $fetch_args = null ) {
-
+function d4events_query_args_defaults( $events_args, $fetch_args ) {
 
 	$tax_query = array();
 
