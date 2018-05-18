@@ -1,9 +1,7 @@
 <?php
 
-include ('columns-events.php');
+include 'columns-events.php';
 
-
-//Register admin style sheets and scripts
 function d4events_admin_elements() {
 	global $d4events_apikey;
 	global $d4events_version;

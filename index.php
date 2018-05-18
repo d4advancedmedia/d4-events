@@ -9,9 +9,9 @@
 
 $d4events_version = '4.0.0-dev';
 
-include ('config.php');
-include ('modules/index.php');
-include ('system/index.php');
-include ('frontend/index.php');
-include ('backend/index.php');
+include 'config.php';
+include 'modules/index.php';
+include 'system/index.php';
+include 'frontend/index.php';
+include 'backend/index.php';
 
