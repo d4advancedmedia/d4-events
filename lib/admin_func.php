@@ -343,44 +343,20 @@ $d4events_meta_fields = array(
         'type'  => 'time'
     ),
     array(
-        'label'=> 'Timezone',
-        'id'    => $prefix.'timezone',
-        'type'  => 'timezone'
+        'label'=> 'All Day Event',
+        'desc'  => 'Removes start/end times',
+        'id'    => $prefix.'all_day',
+        'type'  => 'checkbox'
     ),
     array(
-        'label'=> 'Location',
-        'desc'  => 'Enter a location',
-        'id'    => $prefix.'location',
-        'type'  => 'text'
-    ),
-    array(
-        'label'=> 'Location Description',
-        'desc'  => 'e.g., Enter through the narrow gate',
-        'id'    => $prefix.'location_desc',
-        'type'  => 'text'
-    ),
-    array(
-        'label'=> 'Registration Link',
-        'desc'  => 'Copy and paste registration link here',
-        'id'    => $prefix.'registration_link',
-        'type'  => 'text'
-    ),
-    array(
-        'label'=> '',
-        'desc'  => 'Remove link to event details page?',
-        'id'    => $prefix.'remove_link',
-        'type'  => 'checkbox',
-        'options' => array('Remove Link')
-    ),
-    array(
-        'label'=> '',
-        'desc'  => 'Repeating...',
+        'label'=> 'Repeating Event',
+        'desc'  => 'Yes',
         'id'    => $prefix.'repeating',
         'type'  => 'checkbox',
         'options' => array('Repeating')
     ),
     array(
-        'label'=> 'Frequency',
+        'label'=> 'Repeat Frequency',
         'desc'  => '',
         'id'    => $prefix.'frequency',
         'type'  => 'select',
@@ -410,7 +386,7 @@ $d4events_meta_fields = array(
     	),
     ),
     array(
-	    'label' => 'Ends on',
+	    'label' => 'Repeating event ends on',
 	    'desc'  => 'The last day of the repeating event. Enter "Never" to run indefinitely.',
 	    'id'    => $prefix.'repeat_end_date',
 	    'type'  => 'date'
@@ -421,6 +397,36 @@ $d4events_meta_fields = array(
 	    'id'    => $prefix.'blackout_dates',
 	    'type'  => 'multi_date'
 	),
+    array(
+        'label'=> 'Timezone',
+        'id'    => $prefix.'timezone',
+        'type'  => 'timezone'
+    ),
+    array(
+        'label'=> 'Location',
+        'desc'  => 'Enter a location',
+        'id'    => $prefix.'location',
+        'type'  => 'text'
+    ),
+    array(
+        'label'=> 'Location Description',
+        'desc'  => 'e.g., Enter through the narrow gate',
+        'id'    => $prefix.'location_desc',
+        'type'  => 'text'
+    ),
+    array(
+        'label'=> 'Registration Link',
+        'desc'  => 'Copy and paste registration link here',
+        'id'    => $prefix.'registration_link',
+        'type'  => 'text'
+    ),
+    array(
+        'label'=> '',
+        'desc'  => 'Remove link to event details page?',
+        'id'    => $prefix.'remove_link',
+        'type'  => 'checkbox',
+        'options' => array('Remove Link')
+    ),   
     array(
         'label'=> 'Files',
         'desc'  => 'File URL',
@@ -462,11 +468,25 @@ echo '<input type="hidden" name="d4events_meta_box_nonce" value="'.wp_create_non
     echo '<div class="form-table">';
     #echo '<div class="events-errors">'.$_GET('events_errors').'</div>';	
 
+    $m = 1;
     foreach ($d4events_meta_fields as $field) {
         // get value of this field if it exists for this post
         $meta = get_post_meta($post->ID, $field['id'], true); 
 
-        $datetime_array = d4events_fetch_datetime($post->ID);         
+        $datetime_array = d4events_fetch_datetime($post->ID);
+
+        if($field['id'] == 'd4events_location') {
+			global $d4events_apikey;
+			if(!$d4events_apikey) {
+				continue;
+			}
+		} 
+
+		if($m == 1) {
+			echo '<div>If this is a repeating event, set the start & end dates/times to the start & end dates/times for the first instance of the repeating event.</div>';
+		}
+
+		$m++;        
 
         // begin a table row with
         echo '<div class="events-meta-row row-'.$field['id'].'">
@@ -499,6 +519,7 @@ echo '<input type="hidden" name="d4events_meta_box_nonce" value="'.wp_create_non
 							//$meta = get_post_meta($post->ID, $field['id'], false);
 
 							if ($meta == '') {
+								$meta = array();
 								$meta[0] = '';
 							}
 
@@ -540,7 +561,7 @@ echo '<input type="hidden" name="d4events_meta_box_nonce" value="'.wp_create_non
 						break;
 
 						// text
-						case 'text':
+						case 'text':						
 						    echo '<input type="text" placeholder="'.$field['placeholder'].'" name="'.$field['id'].'" id="'.$field['id'].'" value="'.$meta.'" size="30" />
 						        <br /><span class="description">'.$field['desc'].'</span>';
 						break;

@@ -4,13 +4,13 @@
 	Plugin URI: https://github.com/d4advancedmedia/Events
 	GitHub Plugin URI: https://github.com/d4advancedmedia/Events
 	GitHub Branch: master
-	Description: Simple events manager plugin
-	Version: 3.4.2
+	Description: Events manager plugin
+	Version: 3.5
 	Author: D4 Adv. Media
 	License: GPL2
 */
 
-$d4events_version = '3.4.2';
+$d4events_version = '3.5';
 
 //Register admin style sheets and scripts
 add_action('admin_enqueue_scripts', 'd4events_admin_elements');
@@ -46,6 +46,13 @@ function register_d4events_elements() {
 include ('config.php');
 include ('lib/admin_func.php');
 include ('lib/user_func.php');
+include ('lib/ajax.php');
+include ('lib/class-d4_event.php');
+include ('lib/class-d4_day_events.php');
+include ('lib/class-d4_events.php');
+include ('lib/class-d4_events_calendar.php');
+include ('lib/class-d4_events_agenda.php');
+include ('lib/class-d4_events_list.php');
 include ('lib/shortcodes.php');
 
 function d4events_install() {
@@ -120,7 +127,7 @@ function d4events_install() {
 }
 
 function d4events_update_db_check() {
-    $d4events_version = '3.4.2';
+    $d4events_version = '3.5';
     $d4events_db_version = get_site_option( 'd4events_db_version' );
     if($d4events_db_version == '') {
     	$d4events_db_version = '1.0.0';
