@@ -1,7 +1,6 @@
 <?php
 
-// Use: [d4events year="" month="" category=""]
-	function shortcode_d4events( $atts ) {
+function shortcode_d4events( $atts ) {
 		$attr=shortcode_atts(array(
 			'year' 				=> 	'',
 			'month'				=>	'',
@@ -24,125 +23,33 @@
 			'class'				=>  '',
 			'output_filter'     =>  '',
 			'nowrap'			=>	false,
+			'excluded_ids'		=>  '',
+			'loop_limit'		=> 	'',
+			'disable_loadmore'	=> 	'',
 		), $atts);
 
-		$month = date("n");
-		if ($attr['year'] != '') {
-			$year = date("Y");
-		}
-		if ($attr['search'] != '') {
-			$search = '<form class="search-form" role="search" method="get"action="'.home_url( '/' ).'">
-					<input type="hidden" name="post_type" value="events" />
-					<label><span class="screenreader">Search for:</span></label>
-					<input class="search-field" type="search" placeholder="Search Events..." value="" name="s" title="Search for:" />
-					<input class="search-submit" type="submit" value="Submit" />
-				</form>';
-		}
+		//Create a new events object using the style attribute. This will automatically search for your new class if you wish to extend. For example, for a class called d4_events_newcal, set the style attribute to 'newcal'
 
-		if ($attr['content_length'] != 200) {
-			$content_length = intval($attr['content_length']);
-		} else {
-			$content_length = 200;
-		}
+		$class = 'd4_events_'.$attr['style'];
+		$events = new $class($attr);
 
-		$event_style = ' events-style_'.$attr['style'];
+		$events->process_events();
 
-		if ($attr['agenda'] != '') {
-			$event_style .= ' agenda-view';
-		}	
-
-		$files = $attr['files'];
-
-		$range = $attr['range'];
-
-		if ($attr['number'] != '') {
-			$number = intval($attr['number']);
-		} else {
-			$number = '200';
-		}
-
-		if ($attr['links'] != 'true') {
-			$showlinks = ' no-event-links';
-		}
-		
-		$order = $attr['order'];
-
-		$thumbnail_size = $attr['thumbnail_size'];
-
-		//Add legacy support for category attribute. New version uses any taxonomy and you can comma separate multiple taxonomies.
-		if ($attr['category'] != '') {
-			$attr['terms'] = $attr['category'];
-			$terms = explode(',',$attr['terms']);
-		}
-		if ($attr['exclude_category'] != '') {
-			$attr['exclude_terms'] = $attr['exclude_category'];
-			$exclude_terms = explode(',',$attr['exclude_terms']);
-		}
-
-		$shortcode_args = array(
-			'month' 			=> $month,
-			'year'				=> $year,
-			'taxonomy'			=> $attr['taxonomy'],
-			'tax_field'			=> $attr['tax_field'],
-			'terms'				=> $terms,
-			'exclude_terms'		=> $exclude_terms,	
-			'style'				=> $attr['style'],
-			'links'				=> $attr['links'],
-			'range'				=> $range,
-			'files'				=> $files,
-			'last_event_id'		=> $last_event_id,
-			'content_length'	=> $content_length,
-			'output_filter'		=> $attr['output_filter'],
-		);
-
-		if ($attr['output_filter'] != '') {
-			$output = d4events_draw_calendar($shortcode_args);	
-		} else {
-
-			if ($attr['style'] == 'agenda') {
-
-				$event_content = '<div class="d4-cal-inner"><table cellpadding="0" cellspacing="0" class="calendar">';
-				#$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$attr['style'],'future',$files,$last_event_id,$content_length);
-				$event_content .= d4events_draw_calendar($shortcode_args);				
-				$event_content .= '</table></div>';
-				$event_content .= '<a class="d4events-loadmore">Load More</a>';	
-			}						
-			
-			elseif ($attr['style'] == 'list') {
-
-				$event_content = '<div class="d4-cal-inner">';
-				#$event_content .= d4events_draw_calendar($attr['output_filter'],$month,$year,$category,$exclude_category,$attr['style'],$range,$files,$last_event_id,$content_length);	
-				$event_content .= d4events_draw_calendar($shortcode_args);		
-				$event_content .= '</div>';
-				if ($range != 'all') {	
-					$event_content .= '<a class="d4events-loadmore">Load More</a>';	
-				}	
-				
+		foreach($attr as $att_name => $att_value) {
+			if($att_value) {
+				$data_atts .= ' data-'.$att_name.'="'.$att_value.'"';
 			}
+		}
 
-			else {
-				$range = 'all';
-				$style = 'calendar';
-				$event_content = '<div class="d4-cal-inner">';
-				#$event_content .= d4events_draw_calendar($month,$year,$category,$exclude_category,$style,$range,$files,$last_event_id,$content_length);
-				$event_content .= d4events_draw_calendar($shortcode_args);	
-				$event_content .= '</div>';
-			}
+		/*
 
-			
-			$buttons = '<div class="cal-change-button cal-prev" data-change="cal-prev">Previous</div><div class="cal-change-button cal-next" data-change="cal-next">Next</div>';
+		OLD output. This included the data-last-event-date in the wrapper, which isn't used at all in the pagination anymore, but I left this here just in case it was used somewhere else and needs to be re-instated. The challenge is that the ->getTimestamp function will break if a valid timestamp doesn't exist.
 
-			if($attr['nowrap']) {
-				$output = $event_content;
-			} else {
-				$output = '';
-				$output .= '<div class="d4-cal-wrapper '.$event_style.$showlinks.' '.$attr['class'].'">';
-				$output .= $search;
-				$output .= $event_content;
-				$output .= '</div>';
-			}
+		$output = '<div class="events-data-wrapper events-style_'.$attr['style'].' '.$attr['class'].'" data-last-event-date="'.$events->last_event['date']->getTimestamp().'" data-last-event-id="'.$events->last_event['id'].'"'.$data_atts.'>'.$events->render().'</div>';*/
 
-		}			
+		$output = '<div class="events-data-wrapper events-style_'.$attr['style'].' '.$attr['class'].'" data-last-event-id="'.$events->last_event['id'].'"'.$data_atts.'>'.$events->render().'</div>';
 
 		return $output;
-	} add_shortcode( 'd4events', 'shortcode_d4events' );
+}
+
+add_shortcode( 'd4events', 'shortcode_d4events' );

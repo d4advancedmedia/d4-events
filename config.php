@@ -10,7 +10,7 @@
 
 */
 
-$d4events_apikey = 'AIzaSyCyYncL5imWnSmhF1PXk5NckeM4dObSZ4k';
+/*$d4events_apikey = 'AIzaSyCyYncL5imWnSmhF1PXk5NckeM4dObSZ4k';*/
 
 //Set the posttype labels and icon. Change these if the plugin is conflicting with another events plugin
 $d4events_posttype_singular = "Event";

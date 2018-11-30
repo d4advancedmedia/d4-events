@@ -165,6 +165,17 @@ td.calendar-day-head {
   margin: 8px auto -4px;
   text-align: center;
 }
+.all-day-event .all-day-row {
+  display: table-row !important;
+}
+
+.all-day-row {
+  display: none !important;
+}
+
+.all-day-event .single-event-times {
+  display: none !important;
+}
 /* ---------- List Style ---------- */
 .events-style_list h5, .events-style_agenda h5 {
   background: #333 none repeat scroll 0 0;
@@ -182,13 +193,6 @@ td.calendar-day-head {
 }
 .events_list-datetime {
   display: block;
-  float: right;
-  font-size: 0.7em;
-  font-weight: normal;
-}
-.events_list-datetime {
-  display: block;
-  float: right;
   font-size: 0.7em;
   font-weight: normal;
 }
@@ -225,7 +229,7 @@ td.calendar-day-head {
   overflow: hidden;
   padding: 0 0 20px;
 }
-.d4-cal-wrapper a.events_list-readmore {
+.events_list-single a.events_list-readmore {
   background: #279ad1 none repeat scroll 0 0;
   border-radius: 5px;
   color: #fff;
@@ -364,7 +368,7 @@ p.events_list-description:empty {
 }
 a.d4events-loadmore {
     cursor: pointer;
-    display: none;
+    /*display: none;*/
     text-align: center;
     padding: 5px;
     background: #208a72;

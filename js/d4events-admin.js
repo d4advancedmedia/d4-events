@@ -6,8 +6,15 @@ jQuery(document).ready(function($) {
 
 function initialize() {
 
+	//d4_events_check_all_day();
+	$('input[name="d4events_all_day"]').change(function() {
+		console.log('test');
+		d4_events_check_all_day();
+	});
+
 var input = document.getElementById('d4events_location');
 var autocomplete = new google.maps.places.Autocomplete(input);
+
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -129,4 +136,16 @@ new_singlepass = jQuery('.singlepass:first-child').clone();
 		_custom_media = false;
 	});
 
-})( jQuery );	
+})( jQuery );
+
+function d4_events_check_all_day() {
+	if(jQuery('input[name="d4events_all_day"]').is(':checked')) {
+		jQuery('.row-d4events_start_time, .row-d4events_end_time').hide();
+		jQuery('input[name="d4events_start_time"').val('12:00am');
+		jQuery('input[name="d4events_end_time"').val('11:59pm');
+	} else {
+		jQuery('.row-d4events_start_time, .row-d4events_end_time').show();
+		jQuery('input[name="d4events_start_time"').val('12:00pm');
+		jQuery('input[name="d4events_end_time"').val('12:00pm');
+	}
+}		
