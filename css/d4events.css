@@ -229,7 +229,7 @@ td.calendar-day-head {
   overflow: hidden;
   padding: 0 0 20px;
 }
-a.events_list-readmore {
+.events_list-single a.events_list-readmore {
   background: #279ad1 none repeat scroll 0 0;
   border-radius: 5px;
   color: #fff;

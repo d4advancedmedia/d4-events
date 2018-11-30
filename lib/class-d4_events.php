@@ -8,10 +8,12 @@ class d4_events {
 			
 			//define settings
 
-				$this->set_style($atts['style']);	
+				$this->set_style($atts['style']);				
 				$this->set_links($atts['links']);
 				$this->set_file_list($atts['files']);	
-				$this->set_loadmore($atts['loadmore']);							
+				$this->set_loadmore($atts['loadmore']);
+				$this->set_event_limit($atts['number']);
+				$this->set_output_filter($atts['output_filter']);								
 			
 			//define date ranges
 				
@@ -31,15 +33,15 @@ class d4_events {
 			//define taxonomies
 
 				//Add legacy support for category/exclude_category atts, assign them to terms/exclude_terms
-				if ($attr['category'] != '') {
-					$attr['terms'] 		= $attr['category'];
-					$attr['taxonomy']	= 'd4events_category';
-					$attr['tax_field']	= 'name';				
+				if ($atts['category'] != '') {
+					$atts['terms'] 		= $atts['category'];
+					$atts['taxonomy']	= 'd4events_category';
+					$atts['tax_field']	= 'name';				
 				}
-				if ($attr['exclude_category'] != '') {
-					$attr['exclude_terms']	= $attr['exclude_category'];
-					$attr['taxonomy']	= 'd4events_category';
-					$attr['tax_field']	= 'name';
+				if ($atts['exclude_category'] != '') {
+					$atts['exclude_terms']	= $atts['exclude_category'];
+					$atts['taxonomy']	= 'd4events_category';
+					$atts['tax_field']	= 'name';
 				}
 
 				$this->set_taxonomy($atts['taxonomy']);
@@ -52,22 +54,12 @@ class d4_events {
 
 				$this->set_events();
 			
-			//render html
+			//search html
 
 				$this->set_search_html($atts['search_html']);
 						
-			/*
-			elements from old build that still need to be integrated or removed
-			$this->set_agenda() 			= $atts['agenda'];
-			$this->set_style() 				= $atts['style'];	
-			$this->set_number() 			= $atts['number'];
-			$this->set_thumbnail_size() 	= $atts['thumbnail_size'];
-			$this->set_order() 				= $atts['order'];
-			$this->set_content_length() 	= $atts['content_length'];
-			$this->set_class() 				= $atts['class'];
-			$this->set_output_filter() 		= $atts['output_filter'];
-			$this->set_nowrap() 			= $atts['nowrap'];*/
-			//$this->set_files($atts['files']);	
+			//admin debugging, comment the next line out to see some printed object data
+				//$this->debug = true;			
 		}
 
 	/*
@@ -103,6 +95,11 @@ class d4_events {
 			$this->excluded_ids = $excluded_ids;
 		}
 
+		public function set_output_filter($output_filter) {
+			//this is a filter name that is used to customize the events output
+			$this->output_filter = $output_filter;
+		}
+
 	/*
 	----- define target dates
 	*/
@@ -129,7 +126,7 @@ class d4_events {
 
 			if($this->range == 'all') {
 				$this->range_start = new DateTime('1971-01-01');
-				$this->range_end = new DateTime('2100-01-01');
+				$this->range_end = new DateTime('2038-01-01');
 			}
 			elseif($this->range == 'past') {
 				$this->range_start = new DateTime('1971-01-01');
@@ -137,7 +134,7 @@ class d4_events {
 			}
 			if($this->range == 'future') {
 				$this->range_start = new DateTime( date('Y-m-d',$current_datetime) );
-				$this->range_end = new DateTime( '2035-01-01' );
+				$this->range_end = new DateTime( '2038-01-01' );
 			}
 		}
 
@@ -215,11 +212,7 @@ class d4_events {
 
 		public function set_links($links) {
 			//set whether links should be included in the html
-			if($links) {	
-				$this->links = true;
-			} else {
-				$this->links = false;
-			}
+			$this->links = $links;
 		}
 
 	/*
@@ -274,8 +267,9 @@ class d4_events {
 				'tax_query'		=>  $tax_query,
 				'posts_per_page'=>	-1,
 				'meta_query'	=> array($meta_query),
+				'meta_key'		=> 'd4events_start',
 				'orderby'		=> 'meta_value_num',
-				'order'			=> 'DESC',
+				'order'			=> 'ASC',
 				'post__not_in'	=> $this->excluded_ids,
 			);		
 
@@ -285,6 +279,16 @@ class d4_events {
 
 			$this->events_query = $events_query;
 
+			if($this->debug) {
+				print('<pre>');
+				print_r($events_args);
+				print('</pre>');
+
+				print('<pre>');
+				print_r($events_query);
+				print('</pre>');
+			}
+
 		}
 
 	/*
@@ -293,22 +297,52 @@ class d4_events {
 
 		public function process_events() {			
 
-			$interval = new DateInterval('P1D');			
-			$period = new DatePeriod($this->range_start, $interval, $this->range_end);
+			$interval = new DateInterval('P1D');
 
-			if($this->range == 'past') {
+			if($this->range == 'all') {
+				//if the range is set to all, limit the size of the date range to be scanned by getting the date of the last event date in the query and using that to define the start point rather than the original range set by the query
+				$last_event = end($this->events_query);
+				$last_datetime_array = d4events_fetch_datetime($last_event->ID);
+				$last_event_start_date = strtotime($last_datetime_array['d4events_start_date']) + 9000/*add 9000s or 25 hours to make sure that the last event makes the cut*/;
+
+				$this->set_range_end($last_event_start_date);					
+			}
+
+			$period = new DatePeriod($this->range_start, $interval, $this->range_end);		
+
+			if( ($this->range == 'past') || ($this->range == 'all') ) {
 				foreach ($period as $single_period) {
 					$sorted_array[] = $single_period;
 				}
 				$sorted_array = array_reverse($sorted_array);
-			} else {
-				$sorted_array = $period;
 			}			
+
+			else {
+				$sorted_array = $period;
+			}					
 
 			$loop_count = 0;
 			$event_count = 0;
 
+			foreach($this->events_query as $single_event) {
+				$this->need_to_be_added_ids[$single_event->ID] = $single_event->ID;
+			}
+
 			foreach ($sorted_array as $current_loop_dt) {
+
+				if(empty($this->need_to_be_added_ids)) {
+				//Use the list of "need_to_be_added_ids" to stop this loop once that list is empty (all events added no need to keep checking)										
+					return;
+				}
+
+				$current_loop_timestamp = $current_loop_dt->getTimestamp();
+
+				if($this->debug) {
+					print('<pre>');
+					print_r($current_loop_dt);
+					print('</pre>');
+				}
+
 				//loop through each date in the date period (defined by range start and stop), adding events to that day if they are either explicitly occuring on the loop date or would occur on the date given their repeat pattern.
 
 				if(($this->loadmore) && ($loop_count == 0)) {
@@ -317,34 +351,47 @@ class d4_events {
 					continue;
 				}
 			
+				/*
+				This was from the old version, doesn't seem to be in use so commented it out
 				$next_loop_dt = new DateTime();
 				$next_loop_dt->setTimestamp($current_loop_dt->getTimestamp());
 				$next_loop_dt->add(new DateInterval('P1D'));
+				*/
 
 				$day_events = new d4_day_events($current_loop_dt);
 
 				foreach($this->events_query as $single_event) {
 
-					$single_event_obj = new d4_event($single_event);
+					//if this loop iteration is an already added event, skip checking it again.
+					if(in_array($single_event->ID,$this->already_added_ids)) {						
+						continue;
+					}			
 					
 					$datetime_array = d4events_fetch_datetime($single_event->ID);
 					$event_start_date = strtotime($datetime_array['d4events_start_date']);
 					$event_end_date = strtotime($datetime_array['d4events_end_date']);
 
 					$repeating = get_post_meta( $single_event->ID, 'd4events_repeating', true );
-
 					$repeat_date_match = false;
-					if($repeating) {
-						$repeat_date_match = $day_events->process_repeats($single_event->ID,$current_loop_dt->getTimestamp());
+					//note - repeating events currently do not function with the "all" range. The reason why, is that the "all" range has no upper and lower limit, so a repeating event with no end date could theoretically appear endlessly until the page crashes
+					if( ($repeating) && ($range != 'all') ) {
+						$repeat_date_match = $day_events->process_repeats($single_event->ID,$current_loop_timestamp);
 					}
 
-					if (	( ($current_loop_dt->getTimestamp() >= $event_start_date) && ($current_loop_dt->getTimestamp() <= $event_end_date) ) || $repeat_date_match	) {
-						//if event explicitly occurs on the loop date, or has a matching repeat date, create a new event object and add it to the day events object.					
+					if (	( ($current_loop_timestamp >= $event_start_date) && ($current_loop_timestamp <= $event_end_date) ) || $repeat_date_match	) {
+						//if event explicitly occurs on the loop date, or has a matching repeat date, create a new event object and add it to the day events object.
+						$single_event_obj = new d4_event($single_event);										
 						$single_event_obj->set_files($this->file_list);
 						$day_events->add_event($single_event_obj);
 						$last_event_date = $current_loop_dt;	
 						$last_event_id = $single_event_obj->ID;						
 						$event_count++;
+
+						//array of already_added_ids - used to reduce the number of events to check in the current foreach loop
+						if(!$repeating) {
+							unset($this->need_to_be_added_ids[$single_event_obj->ID]);
+							$this->already_added_ids[] = $single_event_obj->ID;
+						}	
 					}
 				}
 
@@ -357,18 +404,20 @@ class d4_events {
 
 				$loop_count++;
 
-				if($this->event_limit || $this->loop_limit) {
-					//set a hard limit on the total number of event dates that will be added to the object
-					if($event_count >= $this->event_limit) {
-						break;
-					}
-
+				if($this->loop_limit) {
 					//if the loop has run too many times, end the foreach.
 					if($loop_count >= $this->loop_limit) {
 						break;
 					}
 				}
-			}			
+
+				if($this->event_limit) {
+					//set a hard limit on the total number of event dates that will be added to the object
+					if($event_count >= $this->event_limit) {
+						break;
+					}
+				}
+			}	
 		}
 	
 

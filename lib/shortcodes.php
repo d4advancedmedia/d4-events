@@ -24,6 +24,8 @@ function shortcode_d4events( $atts ) {
 			'output_filter'     =>  '',
 			'nowrap'			=>	false,
 			'excluded_ids'		=>  '',
+			'loop_limit'		=> 	'',
+			'disable_loadmore'	=> 	'',
 		), $atts);
 
 		//Create a new events object using the style attribute. This will automatically search for your new class if you wish to extend. For example, for a class called d4_events_newcal, set the style attribute to 'newcal'
@@ -39,7 +41,13 @@ function shortcode_d4events( $atts ) {
 			}
 		}
 
-		$output = '<div class="events-data-wrapper events-style_'.$attr['style'].'" data-last-event-date="'.$events->last_event['date']->getTimestamp().'" data-last-event-id="'.$events->last_event['id'].'"'.$data_atts.'>'.$events->render().'</div>';
+		/*
+
+		OLD output. This included the data-last-event-date in the wrapper, which isn't used at all in the pagination anymore, but I left this here just in case it was used somewhere else and needs to be re-instated. The challenge is that the ->getTimestamp function will break if a valid timestamp doesn't exist.
+
+		$output = '<div class="events-data-wrapper events-style_'.$attr['style'].' '.$attr['class'].'" data-last-event-date="'.$events->last_event['date']->getTimestamp().'" data-last-event-id="'.$events->last_event['id'].'"'.$data_atts.'>'.$events->render().'</div>';*/
+
+		$output = '<div class="events-data-wrapper events-style_'.$attr['style'].' '.$attr['class'].'" data-last-event-id="'.$events->last_event['id'].'"'.$data_atts.'>'.$events->render().'</div>';
 
 		return $output;
 }

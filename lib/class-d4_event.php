@@ -64,7 +64,7 @@ class d4_event {
 				if ( isset($meta[1]['extension']) ) {
 					$file_class = 'fileclass_'.$meta[1]['extension'];
 				}
-				$file_link = '<a href="'.$meta[1].'" class="events_files '.$file_class.'" target="_blank">'.$file_name.'</a>';
+				$file_link = '<a href="'.$meta[1].'" class="events_files '.$file_class.'" target="_blank" style="display:block">'.$file_name.'</a>';
 				
 				$file_array[] = array(
 						'type' => $file_type,

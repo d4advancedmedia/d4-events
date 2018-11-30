@@ -8,7 +8,13 @@ class d4_events_agenda extends d4_events {
 		public function __construct($atts) {
 			$this->range = 'future';		
 			$this->set_event_limit(10);
-			$this->set_loop_limit(700);
+
+			if(!$atts['loop_limit']) {
+				$this->set_loop_limit(2000);
+			} else {
+				$this->set_loop_limit($atts['loop_limit']);
+			}
+			
 			$this->set_store_empty_dates(false);
 			parent::__construct($atts);
 		}
@@ -53,14 +59,18 @@ class d4_events_agenda extends d4_events {
 				//$days_in_this_week++;
 			endfor;*/
 
-			foreach($this->events_data as $single_day_events) {
+			if(empty($this->events_data)) {
+				return 'There are no additional events to display';
+			}
+
+			foreach($this->events_data as $single_day_events) {				
 
 				$day_number = $single_day_events->get_calendar_day();
 				$calendar_timestamp = $single_day_events->get_timestamp();
 
 				if (!empty($single_day_events->day_events)) {
-					$agenda .= '<tr class="agenda-day-row '.$has_events.'" data-event_date="'.$single_day_events->get_timestamp().'"><td class="agenda-day-column">'.$single_day_events->get_week_day_name().'</td><td class="agenda-date-column">'.$single_day_events->get_date().'</td>';
-					$agenda .= '<td><table>';
+					$agenda .= '<tr class="event-single agenda-day-row '.$has_events.'" data-event_date="'.$single_day_events->get_timestamp().'"><td class="agenda-day-column">'.$single_day_events->get_week_day_name().'</td><td class="agenda-date-column">'.$single_day_events->get_date().'</td>';
+					$agenda .= '<td colspan="2"><table width="100%">';
 
 					foreach($single_day_events->day_events as $single_event) {
 						$agenda .= $this->render_single_event($single_event,$calendar_timestamp);
@@ -104,8 +114,8 @@ class d4_events_agenda extends d4_events {
 
 			$datetime_array = d4events_fetch_datetime($ID);
 
-			$event_content .= '<tr class="agenda-single-event"><td class="agenda-time-column">'.$datetime_array['d4events_start_time'].'</td>';
-			$event_content .= '<td class="agenda-title-column">'.$link_open.'<span>'.get_the_title($ID).'</span>'.$link_close.'</td></tr>';
+			$event_content .= '<tr class="agenda-single-event"><td class="agenda-time-column" width="50%">'.$datetime_array['d4events_start_time'].'</td>';
+			$event_content .= '<td class="agenda-title-column" width="50%">'.$link_open.'<span>'.get_the_title($ID).'</span>'.$link_close.'</td></tr>';
 
 			return $event_content;
 

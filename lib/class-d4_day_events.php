@@ -5,6 +5,9 @@ class d4_day_events {
 	*/
 
 	public function __construct($date_time) {
+		if(!$date_time) {
+			$date_time = 'placeholder';
+		}
 		$this->date_time = $date_time;
 		$this->day_events = array();
 	}

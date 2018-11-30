@@ -18,7 +18,7 @@ class d4_events_calendar extends d4_events {
 			//set the date ranges for the events object.
 			$first_of_month = strtotime($this->year.'-'.$this->month.'-01');
 
-			$this->range = 'all';
+			$this->range = 'month';
 			$this->range_start = new DateTime(date("Y-m-01", $first_of_month));
 			$this->range_end = new DateTime(date("Y-m-t", $first_of_month));
 			//bump the range into the last second of the last day of the month
@@ -49,7 +49,7 @@ class d4_events_calendar extends d4_events {
 			for($x = 0; $x < $running_day; $x++):
 				$calendar .= '<td class="calendar-day-np"> </td>';
 				//$days_in_this_week++;
-			endfor;
+			endfor;		
 
 			foreach($this->events_data as $single_day_events) {
 
@@ -73,6 +73,10 @@ class d4_events_calendar extends d4_events {
 			}
 
 			$calendar .= '</tr></table>';
+
+			if(empty($this->events_data)) {
+				$calendar .= 'There are no events this month';
+			}
 
 			return $calendar;
 		}

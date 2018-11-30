@@ -7,9 +7,17 @@ class d4_events_list extends d4_events {
 
 		public function __construct($atts) {			
 			$this->set_event_limit(10);
-			$this->set_loop_limit(700);
+			
+			if(!$atts['loop_limit']) {
+				$this->set_loop_limit(4000);
+			} else {
+				$this->set_loop_limit($atts['loop_limit']);
+			}
+
 			$this->set_store_empty_dates(false);
-			parent::__construct($atts);		
+			parent::__construct($atts);	
+
+			$this->disable_loadmore = $atts['disable_loadmore'];	
 		}
 		
 
@@ -23,39 +31,47 @@ class d4_events_list extends d4_events {
 			//multiday hidden events are those events should only be shown once
 			$multiday_hidden_events = array();
 
-			foreach($this->events_data as $single_day_events) {
+			if(is_array($this->events_data)) {
+				foreach($this->events_data as $single_day_events) {
 
-				$day_number = $single_day_events->get_calendar_day();
-				$calendar_timestamp = $single_day_events->get_timestamp();
+					$day_number = $single_day_events->get_calendar_day();
+					$calendar_timestamp = $single_day_events->get_timestamp();
 
-				if (!empty($single_day_events->day_events)) {
-					
-					foreach($single_day_events->day_events as $single_event) {
-						$event_ids[] = $single_event->ID;	
-					}
-					$i = 0;
-					foreach($multiday_hidden_events as $multiday_hidden_event) {
-						if(!in_array($multiday_hidden_event,$event_ids)) {
-							unset($multiday_hidden_events[$i]);
+					if (!empty($single_day_events->day_events)) {
+						
+						foreach($single_day_events->day_events as $single_event) {
+							$event_ids[] = $single_event->ID;	
 						}
-						$i++;
-					}
-
-					foreach($single_day_events->day_events as $single_event) {												
-
-						if(!in_array($single_event->ID,$multiday_hidden_events)) {
-							$list .= $this->render_single_event($single_event,$calendar_timestamp);
+						$i = 0;
+						foreach($multiday_hidden_events as $multiday_hidden_event) {
+							if(!in_array($multiday_hidden_event,$event_ids)) {
+								unset($multiday_hidden_events[$i]);
+							}
+							$i++;
 						}
 
-						//if its a multi-day event, add it to the list of events to skip. we only want to show it once per series.
-						if($single_event->multiday_event) {
-							$multiday_hidden_events[] = $single_event->ID;
-						}
-					}
-				}		
-			}
+						foreach($single_day_events->day_events as $single_event) {												
 
-			$list .= '<a class="d4events-loadmore">Load More</a>';
+							if(!in_array($single_event->ID,$multiday_hidden_events)) {
+								$list .= $this->render_single_event($single_event,$calendar_timestamp);
+							}
+
+							//if its a multi-day event, add it to the list of events to skip. we only want to show it once per series.
+							if($single_event->multiday_event) {
+								$multiday_hidden_events[] = $single_event->ID;
+							}
+						}
+					}		
+				}
+
+				//add the loadmore button, but only if there isn't an event limit in place (event limit is set by the "number" attribute)
+				if( (!$this->event_limit) && ($this->range != 'all') && (!$this->disable_loadmore) ) {
+					$list .= '<a class="d4events-loadmore">Load More</a>';
+				}
+
+			} else {
+				$list = 'There are no events available.';
+			}			
 
 			return $list;
 		}
@@ -74,13 +90,15 @@ class d4_events_list extends d4_events {
 				$event_data = array(
 					'id'				=> $ID,
 					'date'				=> $calendar_timestamp,
-					'shortcode_args'	=> $shortcode_args,
+					'shortcode_args'	=> $this->output_filter,
+					'file_cluster'		=> $file_cluster = $event->files,
 				);
-				$event_content = apply_filters($shortcode_args['output_filter'], $event_data);
+
+				$event_content = apply_filters($this->output_filter, $event_data);
 				return $event_content;
 			}
 
-			if ($this->links == 'true') {
+			if ($this->links != 'false') {
 				$link_open = '<a href="'.get_the_permalink($ID).'?date='.$calendar_timestamp.'">';	
 				$link_close = '</a>';
 				$readmore = '<a class="events_list-readmore" href="'.get_the_permalink($ID).'?date='.$calendar_timestamp.'">Read More</a>';
@@ -117,7 +135,7 @@ class d4_events_list extends d4_events {
 
 			$repeating = get_post_meta( $ID, 'd4events_repeating', true );
 
-			$event_content .= '<div class="events_list-single'.$has_image.'" data-event_date="'.$calendar_timestamp.'" data-event_id="'.$ID.'" data-event_repeating="'.$repeating.'">';
+			$event_content .= '<div class="event-single events_list-single'.$has_image.'" data-event_date="'.$calendar_timestamp.'" data-event_id="'.$ID.'" data-event_repeating="'.$repeating.'">';
 			$event_content .= $post_thumbnail;	
 			$event_content .= '<h5 class="cal-event-title">'.$link_open.'<span>'.get_the_title($ID).'</span>'.$link_close.'<span class="events_list-datetime">'.$events_date_elements.'</span></h5>';
 			$event_content .= '<div class="events_list-content"><div class="events_list-description">'.$post_content_modified.'</div>';

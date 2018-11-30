@@ -104,7 +104,7 @@ function d4events_ajax_loadmore() {
 	if(isset($_POST['range'])) {
 		$shortcode_args['range'] = $_POST['range'];
 	}
-
+	
 	if(isset($_POST['lastdate'])) {
 		if($shortcode_args['range'] == 'future') {
 			$shortcode_args['range_start'] = $_POST['lastdate'];

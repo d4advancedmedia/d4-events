@@ -7,8 +7,9 @@
 		$(element).html('Loading...');
 		$(calwrapper).addClass('d4events-loadingmore');		
 		
-		var last_event = $(calwrapper).children('div[data-event_id]').last();
+		var last_event = $(calwrapper).find('.event-single').last();
 		var lastdate = $(last_event).attr('data-event_date');
+		console.log(lastdate);
 		var last_event_id = $(last_event).attr('data-event_id');
 
 		var terms = $(calwrapper).attr('data-terms');
